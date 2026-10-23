@@ -1,0 +1,802 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>¿Qué tiempo es?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Literata:opsz,wght@7..72,400;7..72,600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: single centered study card; tense chips colour-coded so each tense gets a consistent identity */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --ink:#1b2430; --muted:#5b6675; --line:#d6dce4;
+  --accent:#2d5bd7; --accent-ink:#ffffff; --good:#1f7a4d; --good-bg:#e3f3ea; --bad:#b4372f; --bad-bg:#fbe7e5; --warn:#8a5a00; --warn-bg:#fdf1d6;
+  --tP:#2d6fb5; --tPR:#c2410c; --tI:#7c4dbd; --tF:#0f8a7a; --tC:#b8860b; --tS:#c0367a;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --read:"Literata",Georgia,"Times New Roman",serif;
+  --body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --surface:#1b212a; --ink:#e7ecf2; --muted:#9aa5b4; --line:#2e3744;
+  --accent:#7a9dff; --accent-ink:#0d1320; --good:#5fd09a; --good-bg:#16302a; --bad:#ff8a80; --bad-bg:#3a1f1e; --warn:#f2c46b; --warn-bg:#3a2f15;
+  --tP:#6aa8ea; --tPR:#f08a4b; --tI:#b391ec; --tF:#4fd1bd; --tC:#e5bf4c; --tS:#ef7fb4; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --surface:#1b212a; --ink:#e7ecf2; --muted:#9aa5b4; --line:#2e3744;
+  --accent:#7a9dff; --accent-ink:#0d1320; --good:#5fd09a; --good-bg:#16302a; --bad:#ff8a80; --bad-bg:#3a1f1e; --warn:#f2c46b; --warn-bg:#3a2f15;
+  --tP:#6aa8ea; --tPR:#f08a4b; --tI:#b391ec; --tF:#4fd1bd; --tC:#e5bf4c; --tS:#ef7fb4; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.ftable th,.ftable td{padding:5px 7px}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-weight:700;font-size:2rem;line-height:1.1;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:4px 0 0;font-size:.95rem}
+button{font:inherit;cursor:pointer}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 12px;font-size:.9rem}
+.ghost:hover{border-color:var(--muted)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:20px}
+.progress{display:flex;align-items:center;gap:12px;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.sentence{font-family:var(--read);font-size:1.5rem;line-height:1.45;margin:0;text-wrap:pretty}
+.blank{display:inline-block;min-width:5.5em;border-bottom:2px solid var(--accent);color:var(--accent);font-weight:600;text-align:center;padding:0 .2em}
+.verb{color:var(--muted);font-size:.85em;white-space:nowrap}
+.step-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:0 0 8px}
+.chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:480px){.chips{grid-template-columns:repeat(2,minmax(0,1fr))}.sentence{font-size:1.3rem}}
+.chip{--c:var(--muted);border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:1px;line-height:1.25}
+.chip b{font-weight:700;display:flex;align-items:center;gap:8px}
+.chip b::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+.chip small{color:var(--muted);font-size:.78rem;padding-left:18px}
+.chip:hover{border-color:var(--c)}
+.chip[aria-pressed="true"]{border-color:var(--c);box-shadow:inset 0 0 0 1.5px var(--c);background:color-mix(in srgb,var(--c) 10%,transparent)}
+.chip:disabled{cursor:default;opacity:.55}
+.chip.right{opacity:1;border-color:var(--good);box-shadow:inset 0 0 0 1.5px var(--good)}
+.chip.wrong{opacity:1;border-color:var(--bad);box-shadow:inset 0 0 0 1.5px var(--bad)}
+.answer-row{display:flex;gap:8px;flex-wrap:wrap}
+#ans{flex:1;min-width:0;font:inherit;font-size:1.15rem;padding:10px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+#ans:focus{border-color:var(--accent);outline:none}
+.primary{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:10px 20px;font-weight:700;font-size:1rem}
+.primary:disabled{opacity:.45;cursor:default}
+.accents{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.accents button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;width:34px;height:32px;font-size:1rem}
+.msg{font-size:.88rem;color:var(--bad);min-height:1.2em;margin:6px 0 0}
+.feedback{border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--line)}
+.verdicts{display:flex;gap:8px;flex-wrap:wrap}
+.pill{font-size:.82rem;font-weight:700;padding:4px 10px;border-radius:99px}
+.pill.ok{background:var(--good-bg);color:var(--good)}
+.pill.no{background:var(--bad-bg);color:var(--bad)}
+.pill.almost{background:var(--warn-bg);color:var(--warn)}
+.full{font-family:var(--read);font-size:1.12rem;margin:0}
+.full mark{background:transparent;color:var(--good);font-weight:600;border-bottom:2px solid var(--good)}
+.en{margin:0;color:var(--muted);font-style:italic}
+.trans{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-top:-10px}
+.trans .link{padding:2px 0}
+.why{margin:0;font-size:.95rem}
+.why .tag{font-weight:700;color:var(--tc)}
+.pattern{margin:0;font-size:.85rem;color:var(--muted)}
+.foot{display:flex;justify-content:flex-end}
+.results h2,.setup h2{font-family:var(--display);font-size:1.4rem;margin:0}
+.scores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.score{border:1px solid var(--line);border-radius:10px;padding:14px}
+.score b{font-family:var(--display);font-size:2rem;display:block;font-variant-numeric:tabular-nums}
+.score span{color:var(--muted);font-size:.85rem}
+.review{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.review li{border-left:4px solid var(--tc);padding:4px 0 4px 12px}
+.review .s{font-family:var(--read)}
+.review .d{font-size:.85rem;color:var(--muted)}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.toggles{display:flex;flex-wrap:wrap;gap:8px}
+.stats{display:flex;flex-direction:column;gap:8px}
+.stat{display:grid;grid-template-columns:110px 1fr 110px;gap:10px;align-items:center;font-size:.88rem;font-variant-numeric:tabular-nums}
+.stat .track{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.stat .track i{display:block;height:100%;background:var(--tc)}
+.stat .n{color:var(--muted);text-align:right}
+.note{color:var(--muted);font-size:.88rem;margin:0}
+details{border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-weight:700}
+.guide{display:grid;gap:10px;margin-top:12px}
+.guide div{border-left:4px solid var(--tc);padding-left:12px;font-size:.92rem}
+.guide b{color:var(--tc)}
+.modeline{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.85rem;color:var(--muted)}
+.link{background:none;border:0;color:var(--accent);font-weight:700;padding:2px 4px;font-size:.85rem}
+.chips.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.small{padding:6px 10px;font-size:.85rem}
+.hintbox{margin-top:12px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.hints{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:.92rem}
+.hints:empty{display:none}
+.hints li{padding-left:2px}
+.hq{display:block;color:var(--muted)}
+.ha{display:block;font-weight:700}
+.hints li.final{list-style:none;margin-left:-20px;border-left:4px solid var(--tc);padding-left:10px}
+.hints li.final b{color:var(--tc)}
+.pill.hintp{background:var(--line);color:var(--muted)}
+.given{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;color:var(--muted)}
+.given .tag{font-family:var(--display);font-size:1.3rem;font-weight:700;color:var(--tc)}
+.ftable{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.ftable .scroll{overflow-x:auto}
+.ftable table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
+.ftable th,.ftable td{border:1px solid var(--line);padding:5px 8px;text-align:left;white-space:nowrap}
+.ftable thead th{background:var(--tc);color:var(--surface);border-color:var(--tc)}
+.ftable tbody th{font-weight:400;color:var(--muted)}
+.tdet{border-top:0;padding-top:0}
+.tdet summary{font-size:.9rem;color:var(--accent)}
+.foot{margin-top:4px}
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.modes{grid-template-columns:1fr}}
+.mode{border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:12px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.mode span{color:var(--muted);font-size:.85rem;line-height:1.3}
+.mode[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.groups{display:flex;flex-direction:column;gap:14px}
+.chip.pair b::before{background:linear-gradient(90deg,var(--c) 50%,var(--c2) 50%)}
+.scores.c1{grid-template-columns:minmax(0,1fr)}
+.guideq{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:.92rem}
+.guideq .note{display:block}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>¿Qué tiempo es?</h1>
+      <p class="sub">Spot the tense, then conjugate. 400 sentences, 10 at a time.</p>
+    </div>
+    <button class="ghost" id="setupBtn" type="button">Practice setup</button>
+  </header>
+
+  <section class="card" id="quiz" aria-live="polite"></section>
+  <section class="card setup" id="setup" hidden></section>
+</div>
+
+<script>
+const TENSES={
+ P:{name:"Presente",en:"does / is doing",rule:"Habits, facts, and what's happening now.",clues:"todos los días, siempre, normalmente, ahora, los sábados",pat:"hablo · hablas · habla · hablamos · hablan"},
+ PR:{name:"Pretérito",en:"did (once, finished)",rule:"A finished action at a specific point in the past.",clues:"ayer, anoche, el año pasado, hace tres años, de repente",pat:"hablé · hablaste · habló · hablamos · hablaron"},
+ I:{name:"Imperfecto",en:"used to / was doing",rule:"Past habits, background descriptions, and actions in progress in the past.",clues:"cuando era niño, antes, mientras, de pequeño, en aquella época",pat:"hablaba · hablabas · hablaba · hablábamos · hablaban"},
+ F:{name:"Futuro",en:"will do",rule:"What will happen, and the result in 'si + present' sentences.",clues:"mañana, el próximo año, la semana que viene, si + presente",pat:"hablaré · hablarás · hablará · hablaremos · hablarán"},
+ C:{name:"Condicional",en:"would do",rule:"Hypotheticals (si + imperfect subjunctive), polite requests, advice, and reported future.",clues:"si tuviera, si pudiera, yo que tú, me gustaría, dijo que",pat:"hablaría · hablarías · hablaría · hablaríamos · hablarían"},
+ S:{name:"Subjuntivo",en:"present subjunctive",rule:"After 'que' with wishes, emotions, doubt, advice or necessity; after ojalá; after cuando/antes de que for future ideas.",clues:"espero que, quiero que, es posible que, ojalá, dudo que, cuando + futuro",pat:"hable · hables · hable · hablemos · hablen"}
+};
+const ORDER=["P","PR","I","F","C","S"];
+const COLOR={P:"var(--tP)",PR:"var(--tPR)",I:"var(--tI)",F:"var(--tF)",C:"var(--tC)",S:"var(--tS)"};
+
+// code|sentence|verb|answer(s, / separated)|clue|English
+const RAW=`P|Todos los días yo ___ café antes de trabajar.|tomar|tomo|Todos los días|Every day I drink coffee before work.
+P|Normalmente mis padres ___ a las diez.|acostarse|se acuestan|Normalmente|My parents usually go to bed at ten.
+P|Ahora mismo nosotros ___ la televisión.|ver|vemos|Ahora mismo|Right now we're watching TV.
+P|Mi hermana ___ en un hospital.|trabajar|trabaja|a general fact about now|My sister works in a hospital.
+P|¿Tú ___ español en casa?|hablar|hablas|a general question about now|Do you speak Spanish at home?
+P|Yo siempre ___ la verdad.|decir|digo|siempre (present habit)|I always tell the truth.
+P|Los sábados ellos ___ al fútbol.|jugar|juegan|Los sábados|On Saturdays they play soccer.
+P|Yo no ___ dónde está mi teléfono.|saber|sé|está (situation right now)|I don't know where my phone is.
+P|Cada mañana mi hijo ___ los dientes.|cepillarse|se cepilla|Cada mañana|Every morning my son brushes his teeth.
+P|¿A qué hora ___ la clase hoy?|empezar|empieza|hoy|What time does class start today?
+P|Yo ___ a la oficina en tren.|ir|voy|a habit now|I go to the office by train.
+P|Nosotros ___ mucho en el invierno.|dormir|dormimos|a general habit|We sleep a lot in winter.
+P|Ustedes ___ muy bien.|cocinar|cocinan|a general fact|You all cook very well.
+P|Yo ___ la mesa antes de cenar.|poner|pongo|a routine|I set the table before dinner.
+P|Mi jefe ___ cansado hoy.|parecer|parece|hoy|My boss seems tired today.
+P|Generalmente yo ___ a las seis y media.|despertarse|me despierto|Generalmente|I generally wake up at six-thirty.
+P|¿Qué ___ tú hacer este fin de semana?|querer|quieres|wanting something now|What do you want to do this weekend?
+P|Yo ___ con mis amigos los viernes.|salir|salgo|los viernes|I go out with my friends on Fridays.
+P|Ella ___ tres idiomas.|hablar|habla|a general fact|She speaks three languages.
+P|Nosotros siempre ___ en la playa en verano.|bañarse|nos bañamos|siempre … en verano|We always swim at the beach in summer.
+P|Yo ___ muchas fotos cuando viajo.|hacer|hago|cuando viajo (present habit)|I take lots of photos when I travel.
+P|Mis abuelos ___ en México.|vivir|viven|a current fact|My grandparents live in Mexico.
+P|Este restaurante ___ a las ocho.|cerrar|cierra|a regular schedule|This restaurant closes at eight.
+P|¿Cuánto ___ estos zapatos?|costar|cuestan|estos (right now)|How much do these shoes cost?
+P|Yo ___ a mi madre todos los domingos.|llamar|llamo|todos los domingos|I call my mother every Sunday.
+P|Tú ___ muy rápido.|conducir|conduces|a general fact|You drive very fast.
+P|Yo no ___ bien sin mis gafas.|ver|veo|a general fact|I don't see well without my glasses.
+P|Los niños ___ en el parque cada tarde.|correr|corren|cada tarde|The kids run in the park every afternoon.
+P|Mi esposa y yo ___ en un restaurante los viernes.|cenar|cenamos|los viernes|My wife and I have dinner at a restaurant on Fridays.
+P|Yo ___ de Estados Unidos.|ser|soy|a permanent fact|I'm from the United States.
+P|¿Tú ___ ayuda con la tarea?|necesitar|necesitas|right now|Do you need help with the homework?
+P|Cada noche ella ___ antes de dormir.|leer|lee|Cada noche|Every night she reads before sleeping.
+P|Yo ___ que tienes razón.|creer|creo|creer que (sure, not doubt) takes the indicative|I think you're right.
+PR|Ayer yo ___ a mi abuela.|visitar|visité|Ayer|Yesterday I visited my grandmother.
+PR|El año pasado nosotros ___ a España.|viajar|viajamos|El año pasado|Last year we traveled to Spain.
+PR|Anoche ellos ___ una película.|ver|vieron|Anoche|Last night they watched a movie.
+PR|¿Qué ___ tú el fin de semana pasado?|hacer|hiciste|el fin de semana pasado|What did you do last weekend?
+PR|La semana pasada mi hermano ___ un coche nuevo.|comprar|compró|La semana pasada|Last week my brother bought a new car.
+PR|Ayer yo ___ a las cinco de la mañana.|levantarse|me levanté|Ayer|Yesterday I got up at five in the morning.
+PR|En 2010 ellos ___ a Chicago por primera vez.|ir|fueron|En 2010 … por primera vez|In 2010 they went to Chicago for the first time.
+PR|Anoche yo no ___ bien.|dormir|dormí|Anoche|Last night I didn't sleep well.
+PR|Ella ___ la carta hace dos días.|escribir|escribió|hace dos días|She wrote the letter two days ago.
+PR|¿Dónde ___ ustedes anoche?|estar|estuvieron|anoche|Where were you all last night?
+PR|El lunes pasado yo ___ que trabajar tarde.|tener|tuve|El lunes pasado|Last Monday I had to work late.
+PR|Ayer mis amigos ___ a mi casa.|venir|vinieron|Ayer|Yesterday my friends came to my house.
+PR|Esta mañana yo ___ el autobús a las ocho.|tomar|tomé|Esta mañana … a las ocho (one finished event)|This morning I took the bus at eight.
+PR|De repente, el teléfono ___.|sonar|sonó|De repente|Suddenly, the phone rang.
+PR|Ayer nosotros le ___ la verdad a la profesora.|decir|dijimos|Ayer|Yesterday we told the teacher the truth.
+PR|Hace tres años yo ___ a mi esposa.|conocer|conocí|Hace tres años|Three years ago I met my wife.
+PR|Anoche tú ___ demasiado.|beber|bebiste|Anoche|Last night you drank too much.
+PR|El sábado pasado yo ___ al fútbol.|jugar|jugué|El sábado pasado|Last Saturday I played soccer.
+PR|Ayer ella ___ temprano.|acostarse|se acostó|Ayer|Yesterday she went to bed early.
+PR|¿Quién ___ la ventana anoche?|abrir|abrió|anoche|Who opened the window last night?
+PR|El martes yo ___ a la reunión a tiempo.|llegar|llegué|El martes|On Tuesday I got to the meeting on time.
+PR|Mis padres ___ en 1985.|casarse|se casaron|en 1985|My parents got married in 1985.
+PR|Ayer yo ___ toda la tarea.|hacer|hice|Ayer|Yesterday I did all the homework.
+PR|Nosotros ___ en ese hotel una sola vez.|quedarse|nos quedamos|una sola vez|We stayed at that hotel only once.
+PR|El mes pasado Juan ___ un premio.|ganar|ganó|El mes pasado|Last month Juan won a prize.
+PR|Ayer yo ___ el libro en la mesa.|poner|puse|Ayer|Yesterday I put the book on the table.
+PR|Anoche ellos no ___ venir.|poder|pudieron|Anoche|Last night they couldn't come.
+PR|¿Tú ___ la noticia ayer?|leer|leíste|ayer|Did you read the news yesterday?
+PR|En 2019 nosotros ___ un perro del refugio.|adoptar|adoptamos|En 2019 (one event)|In 2019 we adopted a dog from the shelter.
+PR|Ayer yo ___ a mi jefe en el supermercado.|ver|vi|Ayer|Yesterday I saw my boss at the supermarket.
+PR|La película ___ a las nueve y terminó a las once.|empezar|empezó|terminó (a sequence of finished events)|The movie started at nine and ended at eleven.
+PR|El viernes pasado ustedes ___ mucho.|bailar|bailaron|El viernes pasado|Last Friday you all danced a lot.
+PR|Ayer yo le ___ un regalo a mi madre.|dar|di|Ayer|Yesterday I gave my mother a gift.
+PR|Esta mañana mi hijo ___ a las siete.|despertarse|se despertó|Esta mañana … a las siete|This morning my son woke up at seven.
+I|Cuando era niño, yo ___ en el parque todos los días.|jugar|jugaba|Cuando era niño … todos los días|When I was a kid, I played in the park every day.
+I|De pequeña, mi mamá me ___ a las siete.|despertar|despertaba|De pequeña|When I was little, my mom used to wake me up at seven.
+I|Antes nosotros ___ en una casa pequeña.|vivir|vivíamos|Antes|We used to live in a small house.
+I|Cuando tenía diez años, yo ___ muchos dibujos animados.|ver|veía|Cuando tenía diez años|When I was ten, I watched lots of cartoons.
+I|Cuando yo era niño, mis abuelos ___ a misa cada domingo.|ir|iban|Cuando yo era niño … cada domingo|When I was a kid, my grandparents went to Mass every Sunday.
+I|Eran las ocho de la noche y ___.|llover|llovía|Eran las ocho (background description)|It was eight at night and it was raining.
+I|Mientras yo ___, sonó el teléfono.|cocinar|cocinaba|Mientras (action in progress)|While I was cooking, the phone rang.
+I|De niño, mi hermano ___ muy tímido.|ser|era|De niño|As a kid, my brother was very shy.
+I|Antes yo ___ a las seis para ir a la escuela.|levantarse|me levantaba|Antes … para ir a la escuela|I used to get up at six to go to school.
+I|Cuando éramos jóvenes, nosotros ___ mucho.|bailar|bailábamos|Cuando éramos jóvenes|When we were young, we used to dance a lot.
+I|La casa de mis abuelos ___ un jardín enorme.|tener|tenía|describing the past|My grandparents' house had a huge garden.
+I|Mientras ellos ___ la tele, yo leía.|ver|veían|Mientras|While they were watching TV, I was reading.
+I|Cuando vivía en Texas, yo ___ en bicicleta al trabajo.|ir|iba|Cuando vivía en Texas|When I lived in Texas, I used to bike to work.
+I|De niña, ella siempre ___ con su perro.|jugar|jugaba|De niña … siempre|As a girl, she always played with her dog.
+I|Antes tú ___ mucho más.|leer|leías|Antes|You used to read a lot more.
+I|Cuando era pequeño, yo no ___ las verduras.|comer|comía|Cuando era pequeño|When I was little, I didn't eat vegetables.
+I|Hacía sol y los pájaros ___.|cantar|cantaban|Hacía sol (scene-setting)|It was sunny and the birds were singing.
+I|Cuando estaba en la universidad, yo ___ hasta tarde.|estudiar|estudiaba|Cuando estaba en la universidad|When I was in college, I used to study late.
+I|Cuando yo era niño, a menudo mis padres nos ___ a la playa.|llevar|llevaban|a menudo (past habit)|When I was a kid, my parents often took us to the beach.
+I|Mi abuela siempre ___ galletas cuando la visitábamos.|hacer|hacía|siempre … cuando la visitábamos|My grandmother always made cookies when we visited her.
+I|¿Dónde ___ ustedes cuando eran niños?|vivir|vivían|cuando eran niños|Where did you all live when you were kids?
+I|Como yo ___ cansado, me fui a casa temprano.|estar|estaba|Como (describing a state, the reason)|Since I was tired, I went home early.
+I|Cuando era niño, yo ___ a las ocho todas las noches.|acostarse|me acostaba|Cuando era niño … todas las noches|When I was a kid, I went to bed at eight every night.
+I|Antes nosotros ___ en el río cada verano.|bañarse|nos bañábamos|Antes … cada verano|We used to swim in the river every summer.
+I|En aquella época, la gente no ___ teléfonos móviles.|tener|tenía|En aquella época|Back then, people didn't have cell phones.
+I|Cuando trabajaba en el banco, yo ___ mucho.|viajar|viajaba|Cuando trabajaba|When I worked at the bank, I traveled a lot.
+I|Cuando yo era joven, mi padre ___ el periódico cada mañana.|leer|leía|Cuando yo era joven … cada mañana|When I was young, my dad read the paper every morning.
+I|Mientras tú ___, yo preparaba la cena.|ducharse|te duchabas|Mientras|While you were showering, I was making dinner.
+I|Ella ___ veinte años cuando se mudó a Nueva York.|tener|tenía|age in the past (description)|She was twenty when she moved to New York.
+I|Antes yo ___ dos tazas de café al día; ahora solo una.|tomar|tomaba|Antes … ahora|I used to drink two cups of coffee a day; now only one.
+I|De niños, mi hermano y yo ___ mucho.|pelearse|nos peleábamos|De niños|As kids, my brother and I fought a lot.
+I|El cielo ___ gris y hacía frío.|estar|estaba|hacía frío (description)|The sky was gray and it was cold.
+I|Antes ellos ___ en la misma oficina.|trabajar|trabajaban|Antes|They used to work in the same office.
+F|Mañana nosotros ___ a la playa.|ir|iremos|Mañana|Tomorrow we will go to the beach.
+F|El próximo año yo ___ a estudiar francés.|empezar|empezaré|El próximo año|Next year I'll start studying French.
+F|Creo que ___ mañana.|llover|lloverá|mañana|I think it will rain tomorrow.
+F|La semana que viene ellos ___ a visitarnos.|venir|vendrán|La semana que viene|Next week they'll come to visit us.
+F|Mañana yo ___ temprano para ir al aeropuerto.|levantarse|me levantaré|Mañana|Tomorrow I'll get up early to go to the airport.
+F|¿Qué ___ tú después de graduarte?|hacer|harás|después de graduarte (future)|What will you do after you graduate?
+F|En 2030 mi hijo ___ dieciocho años.|tener|tendrá|En 2030|In 2030 my son will be eighteen.
+F|Te prometo que yo ___ la verdad.|decir|diré|Te prometo (a promise about the future)|I promise you I'll tell the truth.
+F|Esta noche nosotros ___ en casa.|cenar|cenaremos|Esta noche|Tonight we'll have dinner at home.
+F|Algún día yo ___ una casa en la playa.|comprar|compraré|Algún día|Someday I'll buy a house at the beach.
+F|El lunes que viene ustedes ___ un examen.|tener|tendrán|El lunes que viene|Next Monday you all will have an exam.
+F|Mañana yo no ___ ir a la reunión.|poder|podré|Mañana|Tomorrow I won't be able to go to the meeting.
+F|El tren ___ dentro de diez minutos.|salir|saldrá|dentro de diez minutos|The train will leave in ten minutes.
+F|Pronto nosotros ___ la respuesta.|saber|sabremos|Pronto|Soon we'll know the answer.
+F|Mañana yo te ___ el libro.|dar|daré|Mañana|Tomorrow I'll give you the book.
+F|El próximo verano ellas ___ a Italia.|viajar|viajarán|El próximo verano|Next summer they'll travel to Italy.
+F|¿Dónde ___ tú el coche esta noche?|poner|pondrás|esta noche (later)|Where will you put the car tonight?
+F|Estoy seguro de que tú ___ el trabajo.|conseguir|conseguirás|Estoy seguro (a confident prediction)|I'm sure you'll get the job.
+F|Esta noche mis padres ___ temprano.|acostarse|se acostarán|Esta noche|Tonight my parents will go to bed early.
+F|En el futuro, los robots ___ muchas tareas de la casa.|hacer|harán|En el futuro|In the future, robots will do many household chores.
+F|El próximo mes yo ___ con mi jefe sobre un aumento.|hablar|hablaré|El próximo mes|Next month I'll talk to my boss about a raise.
+F|Mañana ___ sol todo el día.|hacer|hará|Mañana|Tomorrow it will be sunny all day.
+F|La fiesta ___ en mi casa el sábado.|ser|será|el sábado (coming up)|The party will be at my house on Saturday.
+F|Si llegan tarde, nosotros ___ que esperar.|tener|tendremos|Si + presente (llegan) → futuro|If they arrive late, we'll have to wait.
+F|Si estudias, ___ el examen.|aprobar|aprobarás|Si + presente (estudias) → futuro|If you study, you'll pass the exam.
+F|Si llueve mañana, yo ___ en casa.|quedarse|me quedaré|Si + presente (llueve) → futuro|If it rains tomorrow, I'll stay home.
+F|Mañana tú ___ a tu abuela, ¿verdad?|llamar|llamarás|Mañana|Tomorrow you'll call your grandmother, right?
+F|El año que viene ellos ___ en una casa nueva.|vivir|vivirán|El año que viene|Next year they'll live in a new house.
+F|Mañana yo ___ el pastel para la fiesta.|traer|traeré|Mañana|Tomorrow I'll bring the cake for the party.
+F|Me pregunto cuánto ___ el nuevo teléfono.|costar|costará|Me pregunto (wondering about the future)|I wonder how much the new phone will cost.
+F|Mañana nosotros ___ a las siete.|despertarse|nos despertaremos|Mañana|Tomorrow we'll wake up at seven.
+F|Si me ayudas, yo te ___ a cenar.|invitar|invitaré|Si + presente (ayudas) → futuro|If you help me, I'll take you out to dinner.
+F|En diciembre mi hermana ___.|casarse|se casará|En diciembre (coming up)|In December my sister will get married.
+C|Si tuviera más dinero, yo ___ por el mundo.|viajar|viajaría|Si tuviera → condicional|If I had more money, I would travel the world.
+C|¿Qué ___ tú si pudieras vivir en cualquier país?|hacer|harías|si pudieras → condicional|What would you do if you could live in any country?
+C|Yo en tu lugar, ___ con el jefe.|hablar|hablaría|Yo en tu lugar (advice)|If I were you, I'd talk to the boss.
+C|Si tuviéramos tiempo, nosotros ___ más.|leer|leeríamos|Si tuviéramos → condicional|If we had time, we would read more.
+C|¿Tú ___ cerrar la ventana, por favor?|poder|podrías|por favor (polite request)|Could you close the window, please?
+C|Me ___ un café, gracias.|gustar|gustaría|Me gustaría (polite)|I'd like a coffee, thanks.
+C|Si fuera rico, yo ___ una casa enorme.|tener|tendría|Si fuera → condicional|If I were rich, I would have a huge house.
+C|Ellos dijeron que ___ a las ocho.|venir|vendrían|dijeron que (reported future)|They said they would come at eight.
+C|Si pudiera, yo ___ más tarde.|levantarse|me levantaría|Si pudiera → condicional|If I could, I would get up later.
+C|Si vivieras más cerca, tú ___ al trabajo andando.|ir|irías|Si vivieras → condicional|If you lived closer, you would walk to work.
+C|Yo que tú, no le ___ nada.|decir|diría|Yo que tú (advice)|If I were you, I wouldn't tell him anything.
+C|¿Qué ___ ustedes con un millón de dólares?|hacer|harían|an imaginary situation|What would you all do with a million dollars?
+C|Si no lloviera, nosotros ___ al parque.|salir|saldríamos|Si no lloviera → condicional|If it weren't raining, we would go out to the park.
+C|A mi esposa le ___ vivir en Europa.|encantar|encantaría|a wish (would love)|My wife would love to live in Europe.
+C|Tú ___ descansar más.|deber|deberías|advice (should)|You should rest more.
+C|Si tuviera hambre, yo ___ algo.|comer|comería|Si tuviera → condicional|If I were hungry, I would eat something.
+C|Juan me prometió que me ___ dinero.|prestar|prestaría|me prometió que (reported future)|Juan promised me he would lend me money.
+C|Si supiera la respuesta, te la ___.|decir|diría|Si supiera → condicional|If I knew the answer, I would tell you.
+C|¿Ustedes ___ ayudarme con esto?|poder|podrían|polite request|Could you all help me with this?
+C|Si fuera tú, yo ___ ese trabajo.|aceptar|aceptaría|Si fuera tú → condicional|If I were you, I would take that job.
+C|Si el vuelo se cancelara, nosotros ___ que quedarnos otra noche.|tener|tendríamos|Si se cancelara → condicional|If the flight were canceled, we would have to stay another night.
+C|Si ganara la lotería, yo ___ de trabajar.|dejar|dejaría|Si ganara → condicional|If I won the lottery, I would stop working.
+C|Ella pensaba que tú ___ más temprano.|llegar|llegarías|pensaba que (future seen from the past)|She thought you would arrive earlier.
+C|Si tuvieran coche, ellos nos ___ más a menudo.|visitar|visitarían|Si tuvieran → condicional|If they had a car, they would visit us more often.
+C|¿Dónde ___ tú si pudieras elegir cualquier ciudad?|vivir|vivirías|si pudieras → condicional|Where would you live if you could choose any city?
+C|Si no estuviera tan cansado, yo ___ contigo.|salir|saldría|Si no estuviera → condicional|If I weren't so tired, I would go out with you.
+C|Me dijiste que tú ___ el informe hoy.|terminar|terminarías|Me dijiste que (reported future)|You told me you would finish the report today.
+C|Si hiciera calor, nosotros ___ en el lago.|bañarse|nos bañaríamos|Si hiciera → condicional|If it were hot, we would swim in the lake.
+C|Con un trabajo más cerca de casa, yo ___ más feliz.|ser|sería|an imaginary situation|With a job closer to home, I would be happier.
+C|Si tuviera más tiempo, yo ___ a tocar la guitarra.|aprender|aprendería|Si tuviera → condicional|If I had more time, I would learn to play guitar.
+C|¿Te ___ venir a cenar el sábado?|gustar|gustaría|¿Te gustaría…? (polite invitation)|Would you like to come to dinner on Saturday?
+C|Si pudieras, ¿a qué hora ___ tú?|acostarse|te acostarías|Si pudieras → condicional|If you could, what time would you go to bed?
+C|El pronóstico dijo que ___ sol hoy.|hacer|haría|dijo que (reported future)|The forecast said it would be sunny today.
+S|Espero que tú ___ bien en tu nuevo trabajo.|estar|estés|Espero que (a hope)|I hope you're doing well at your new job.
+S|Me alegra que ustedes ___ a la reunión.|venir|vengan|Me alegra que (an emotion)|I'm glad you all are coming to the meeting.
+S|Es posible que mañana ___.|llover|llueva|Es posible que (uncertainty)|It might rain tomorrow.
+S|Te recomiendo que ___ más agua.|beber|bebas|Te recomiendo que (advice)|I recommend that you drink more water.
+S|Quiero que nosotros ___ la verdad.|decir|digamos|Quiero que (a wish about someone)|I want us to tell the truth.
+S|Ojalá que ___ sol el sábado.|hacer|haga|Ojalá|Hopefully it'll be sunny on Saturday.
+S|Es importante que tú ___ temprano.|levantarse|te levantes|Es importante que|It's important that you get up early.
+S|Mi madre quiere que yo la ___ más.|llamar|llame|quiere que|My mother wants me to call her more.
+S|No creo que ellos ___ a tiempo.|llegar|lleguen|No creo que (doubt)|I don't think they'll arrive on time.
+S|Dudo que él ___ la respuesta.|saber|sepa|Dudo que (doubt)|I doubt he knows the answer.
+S|Es necesario que nosotros ___ más.|estudiar|estudiemos|Es necesario que|It's necessary that we study more.
+S|Cuando tú ___ a casa, llámame.|llegar|llegues|Cuando + a future moment|When you get home, call me.
+S|Busco un apartamento que ___ dos baños.|tener|tenga|que + something not yet found|I'm looking for an apartment that has two bathrooms.
+S|Prefiero que ustedes no ___ aquí.|fumar|fumen|Prefiero que|I'd prefer that you all not smoke here.
+S|El médico me pide que yo ___ más.|caminar|camine|me pide que (a request)|The doctor asks me to walk more.
+S|Es una lástima que tú no ___ venir.|poder|puedas|Es una lástima que (an emotion)|It's a shame you can't come.
+S|Vamos a limpiar antes de que ellos ___.|llegar|lleguen|antes de que (always subjunctive)|We're going to clean before they arrive.
+S|Ojalá que mis hijos ___ felices.|ser|sean|Ojalá|I hope my kids are happy.
+S|Le sugiero a usted que ___ temprano.|acostarse|se acueste|Le sugiero que (advice)|I suggest you go to bed early.
+S|Me molesta que mi vecino ___ la música tan alta.|poner|ponga|Me molesta que (an emotion)|It bothers me that my neighbor plays music so loud.
+S|Quiero que tú ___ conmigo al cine.|ir|vayas|Quiero que|I want you to go to the movies with me.
+S|Es probable que nosotros ___ tarde.|salir|salgamos|Es probable que|We'll probably leave late.
+S|No es verdad que yo ___ cansado.|estar|esté|No es verdad que (denial)|It's not true that I'm tired.
+S|Para que tú ___, te lo explico otra vez.|entender|entiendas|Para que (always subjunctive)|So that you understand, I'll explain it again.
+S|Espero que ustedes ___ un buen viaje.|tener|tengan|Espero que|I hope you all have a good trip.
+S|Mis padres no quieren que yo ___ tan tarde.|volver|vuelva|no quieren que|My parents don't want me to come back so late.
+S|Es mejor que tú ___ la verdad.|saber|sepas|Es mejor que|It's better that you know the truth.
+S|Necesito que alguien me ___.|ayudar|ayude|Necesito que|I need someone to help me.
+S|Me alegro de que tu hermana ___ mejor.|sentirse|se sienta|Me alegro de que (an emotion)|I'm glad your sister feels better.
+S|Tan pronto como yo ___ el dinero, te pago.|recibir|reciba|Tan pronto como + a future moment|As soon as I get the money, I'll pay you.
+S|Es raro que Ana no ___ el teléfono.|contestar|conteste|Es raro que (a reaction)|It's strange that Ana isn't answering the phone.
+S|Te pido que ___ la puerta al salir.|cerrar|cierres|Te pido que (a request)|I'm asking you to close the door when you leave.
+S|Quiero que mis hijos ___ temprano.|dormirse|se duerman|Quiero que|I want my kids to fall asleep early.
+S|Ojalá que nosotros ___ ganar el partido.|poder|podamos|Ojalá|Hopefully we can win the game.
+P|Mi hijo ___ en la escuela primaria.|estudiar|estudia|a current fact|My son studies at the elementary school.
+P|Los domingos nosotros ___ tarde.|levantarse|nos levantamos|Los domingos|On Sundays we get up late.
+P|¿Tú ___ el desayuno todas las mañanas?|preparar|preparas|todas las mañanas|Do you make breakfast every morning?
+P|Yo ___ cansado ahora mismo.|estar|estoy|ahora mismo|I'm tired right now.
+P|Mi perro ___ mucho por la noche.|ladrar|ladra|a habit now|My dog barks a lot at night.
+P|Ustedes siempre ___ temprano a clase.|llegar|llegan|siempre|You all always arrive early to class.
+P|Yo ___ ejercicio tres veces por semana.|hacer|hago|tres veces por semana|I exercise three times a week.
+P|¿Cuántos hermanos ___ tú?|tener|tienes|a current fact|How many siblings do you have?
+P|Mi padre ___ el periódico cada mañana.|leer|lee|cada mañana|My dad reads the newspaper every morning.
+P|Nosotros ___ en Portland.|vivir|vivimos|a current fact|We live in Portland.
+P|Yo no ___ pescado.|comer|como|a general preference|I don't eat fish.
+P|Mis hijos ___ videojuegos después de la escuela.|jugar|juegan|después de la escuela (a routine)|My kids play video games after school.
+P|¿A qué hora ___ tú normalmente?|acostarse|te acuestas|normalmente|What time do you usually go to bed?
+P|Yo ___ las llaves en el mismo lugar todos los días.|dejar|dejo|todos los días|I leave my keys in the same place every day.
+P|Ella ___ música mientras trabaja.|escuchar|escucha|mientras trabaja (present habit)|She listens to music while she works.
+P|Hoy ___ mucho frío.|hacer|hace|Hoy|It's very cold today.
+P|Yo ___ a mis vecinos muy bien.|conocer|conozco|a current fact|I know my neighbors very well.
+P|Mi esposa ___ en una oficina en el centro.|trabajar|trabaja|a current fact|My wife works in an office downtown.
+P|Nosotros ___ la cena a las siete.|servir|servimos|a routine|We serve dinner at seven.
+P|¿Qué ___ tú los fines de semana?|hacer|haces|los fines de semana|What do you do on weekends?
+P|Yo ___ el autobús cada mañana.|tomar|tomo|cada mañana|I take the bus every morning.
+P|Los bancos ___ a las nueve.|abrir|abren|a regular schedule|The banks open at nine.
+P|Mi hermano siempre ___ en el cine.|dormirse|se duerme|siempre|My brother always falls asleep at the movies.
+P|Yo ___ la ropa los lunes.|lavar|lavo|los lunes|I do the laundry on Mondays.
+P|¿Tú ___ a qué hora sale el tren?|saber|sabes|a question about now|Do you know what time the train leaves?
+P|Ellos ___ el piano muy bien.|tocar|tocan|a general fact|They play the piano very well.
+P|Yo ___ un poco de miedo a los perros grandes.|tener|tengo|a current feeling|I'm a little afraid of big dogs.
+P|Cada verano mi familia ___ a la costa.|viajar|viaja|Cada verano|Every summer my family travels to the coast.
+P|Ahora mismo yo ___ un correo a mi jefe.|escribir|escribo|Ahora mismo|Right now I'm writing an email to my boss.
+P|Nosotros ___ mucho cuando estamos juntos.|reírse|nos reímos|cuando estamos juntos (present habit)|We laugh a lot when we're together.
+P|Mi abuela ___ ochenta años.|tener|tiene|a current fact (age)|My grandmother is eighty.
+P|Yo siempre ___ las manos antes de comer.|lavarse|me lavo|siempre|I always wash my hands before eating.
+P|¿Ustedes ___ hablar inglés?|saber|saben|a general question about now|Do you all know how to speak English?
+P|Este tren ___ a Seattle.|ir|va|a current fact|This train goes to Seattle.
+PR|Ayer yo ___ con mi hermana por teléfono.|hablar|hablé|Ayer|Yesterday I talked with my sister on the phone.
+PR|Anoche nosotros ___ pizza.|pedir|pedimos|Anoche|Last night we ordered pizza.
+PR|El verano pasado ellos ___ a Costa Rica.|ir|fueron|El verano pasado|Last summer they went to Costa Rica.
+PR|¿A qué hora ___ tú anoche?|acostarse|te acostaste|anoche|What time did you go to bed last night?
+PR|Hace dos semanas yo ___ el coche.|vender|vendí|Hace dos semanas|Two weeks ago I sold the car.
+PR|Ayer mi hijo ___ de la bicicleta.|caerse|se cayó|Ayer|Yesterday my son fell off his bike.
+PR|El domingo pasado nosotros ___ en un restaurante mexicano.|comer|comimos|El domingo pasado|Last Sunday we ate at a Mexican restaurant.
+PR|Anoche yo ___ un ruido extraño.|oír|oí|Anoche|Last night I heard a strange noise.
+PR|En 2015 mi familia ___ a Oregón.|mudarse|se mudó|En 2015|In 2015 my family moved to Oregon.
+PR|Ayer ella me ___ una pregunta difícil.|hacer|hizo|Ayer|Yesterday she asked me a hard question.
+PR|La semana pasada yo ___ al médico.|ir|fui|La semana pasada|Last week I went to the doctor.
+PR|Ayer mi jefe me ___ un día libre.|dar|dio|Ayer|Yesterday my boss gave me a day off.
+PR|El año pasado tú ___ mucho.|trabajar|trabajaste|El año pasado|Last year you worked a lot.
+PR|Anoche ellos ___ en casa de sus amigos.|quedarse|se quedaron|Anoche|Last night they stayed at their friends' house.
+PR|Ayer yo ___ el almuerzo para todos.|preparar|preparé|Ayer|Yesterday I made lunch for everyone.
+PR|El jueves pasado nosotros ___ el partido.|perder|perdimos|El jueves pasado|Last Thursday we lost the game.
+PR|Esta mañana yo no ___ mis llaves.|encontrar|encontré|Esta mañana (one finished event)|This morning I couldn't find my keys.
+PR|Hace un mes ellos ___ un bebé.|tener|tuvieron|Hace un mes|A month ago they had a baby.
+PR|Ayer yo ___ tres horas en el aeropuerto.|esperar|esperé|Ayer|Yesterday I waited three hours at the airport.
+PR|El sábado mis amigos y yo ___ una montaña.|subir|subimos|El sábado|On Saturday my friends and I climbed a mountain.
+PR|Anoche tú no me ___.|llamar|llamaste|Anoche|Last night you didn't call me.
+PR|Ayer el profesor ___ la clase temprano.|terminar|terminó|Ayer|Yesterday the teacher ended class early.
+PR|En 2020 yo ___ a trabajar desde casa.|empezar|empecé|En 2020|In 2020 I started working from home.
+PR|Ayer ustedes ___ muy tarde.|llegar|llegaron|Ayer|Yesterday you all arrived very late.
+PR|El mes pasado nosotros ___ a mis suegros.|visitar|visitamos|El mes pasado|Last month we visited my in-laws.
+PR|Anoche yo ___ y mi esposa lavó los platos.|cocinar|cociné|Anoche … lavó (finished events)|Last night I cooked and my wife washed the dishes.
+PR|¿Cuándo ___ ustedes de las vacaciones?|volver|volvieron|a single finished event|When did you all come back from vacation?
+PR|Ayer yo le ___ un mensaje a mi hermano.|mandar|mandé|Ayer|Yesterday I sent my brother a message.
+PR|De repente, el niño ___ a llorar.|ponerse|se puso|De repente|Suddenly, the boy started crying.
+PR|El año pasado yo ___ veinte libros.|leer|leí|El año pasado|Last year I read twenty books.
+PR|Ayer nosotros ___ por el parque.|caminar|caminamos|Ayer|Yesterday we walked through the park.
+PR|Anoche mi hija ___ su primera obra de teatro.|ver|vio|Anoche|Last night my daughter saw her first play.
+PR|La semana pasada ellos ___ la casa de azul.|pintar|pintaron|La semana pasada|Last week they painted the house blue.
+I|Cuando era niño, yo ___ mucho miedo a la oscuridad.|tener|tenía|Cuando era niño|When I was a kid, I was very afraid of the dark.
+I|De pequeños, nosotros ___ en la calle con los vecinos.|jugar|jugábamos|De pequeños|When we were little, we played in the street with the neighbors.
+I|Antes mi padre ___ mucho.|fumar|fumaba|Antes|My dad used to smoke a lot.
+I|Mientras nosotros ___, empezó a llover.|caminar|caminábamos|Mientras (action in progress)|While we were walking, it started to rain.
+I|Cuando vivíamos en Chicago, ___ mucho en invierno.|nevar|nevaba|Cuando vivíamos en Chicago|When we lived in Chicago, it snowed a lot in winter.
+I|Mi primer coche ___ rojo.|ser|era|describing the past|My first car was red.
+I|Cuando era estudiante, yo ___ en un café.|trabajar|trabajaba|Cuando era estudiante|When I was a student, I worked at a café.
+I|Antes tú ___ el pelo largo.|tener|tenías|Antes|You used to have long hair.
+I|De niño, mi hijo ___ con la luz encendida.|dormir|dormía|De niño|As a kid, my son slept with the light on.
+I|Cuando yo era joven, todos los veranos ___ a casa de mis tíos.|ir|iba|Cuando yo era joven … todos los veranos|When I was young, I went to my aunt and uncle's house every summer.
+I|Eran las tres de la mañana y yo no ___ dormir.|poder|podía|Eran las tres (background)|It was three in the morning and I couldn't sleep.
+I|Mientras mi esposa ___ por teléfono, yo cuidaba a los niños.|hablar|hablaba|Mientras|While my wife was talking on the phone, I was looking after the kids.
+I|En aquella época, nosotros no ___ mucho dinero.|tener|teníamos|En aquella época|Back then, we didn't have much money.
+I|Cuando era niña, mi hermana ___ ser doctora.|querer|quería|Cuando era niña|When she was a girl, my sister wanted to be a doctor.
+I|Antes ellos ___ en el mismo barrio que nosotros.|vivir|vivían|Antes|They used to live in the same neighborhood as us.
+I|De joven, mi abuelo ___ en el campo.|trabajar|trabajaba|De joven|As a young man, my grandfather worked in the countryside.
+I|Cuando la vi, la niña ___ muy contenta.|estar|estaba|Cuando la vi (describing a state)|When I saw her, the girl was very happy.
+I|Cuando yo ___ joven, me gustaba correr.|ser|era|me gustaba (past description)|When I was young, I liked to run.
+I|Antes nosotros ___ al cine cada viernes.|ir|íbamos|Antes … cada viernes|We used to go to the movies every Friday.
+I|Mientras tú ___, yo limpié la cocina.|dormir|dormías|Mientras|While you were sleeping, I cleaned the kitchen.
+I|De niño, yo siempre ___ la leche con chocolate.|tomar|tomaba|De niño … siempre|As a kid, I always drank my milk with chocolate.
+I|Antes, en mi pueblo, la gente ___ muy temprano.|levantarse|se levantaba|Antes|In my town, people used to get up very early.
+I|Hacía mucho frío y nosotros no ___ abrigos.|llevar|llevábamos|Hacía mucho frío (description)|It was very cold and we weren't wearing coats.
+I|Cuando mis hijos eran pequeños, yo les ___ cuentos cada noche.|leer|leía|Cuando mis hijos eran pequeños … cada noche|When my kids were little, I read them stories every night.
+I|Ella ___ cansada, pero siguió trabajando.|estar|estaba|describing a state in the past|She was tired, but she kept working.
+I|Antes yo no ___ hablar español.|saber|sabía|Antes|I didn't use to know how to speak Spanish.
+I|Cuando ustedes ___ en la universidad, ¿dónde vivían?|estar|estaban|Cuando … ¿dónde vivían? (background)|When you all were in college, where did you live?
+I|Mientras los niños ___ en el jardín, los padres hablaban.|jugar|jugaban|Mientras|While the kids were playing in the yard, the parents were talking.
+I|De pequeño, mi hermano ___ muchas preguntas.|hacer|hacía|De pequeño|When he was little, my brother asked lots of questions.
+I|Cuando era adolescente, yo ___ todos los días con mis amigos.|salir|salía|Cuando era adolescente … todos los días|As a teenager, I went out with my friends every day.
+I|La tienda donde yo trabajaba ___ cerca de la estación.|estar|estaba|donde yo trabajaba (description)|The store where I worked was near the station.
+I|Antes mis padres ___ muy tarde.|cenar|cenaban|Antes|My parents used to eat dinner very late.
+I|Eran las siete y los niños todavía ___.|dormir|dormían|Eran las siete (background)|It was seven and the kids were still sleeping.
+F|Mañana yo ___ a mi madre.|visitar|visitaré|Mañana|Tomorrow I'll visit my mother.
+F|El próximo año nosotros ___ a Japón.|viajar|viajaremos|El próximo año|Next year we'll travel to Japan.
+F|Esta tarde yo ___ la casa.|limpiar|limpiaré|Esta tarde (later today)|This afternoon I'll clean the house.
+F|Mañana tú ___ tu primer día de trabajo.|tener|tendrás|Mañana|Tomorrow you'll have your first day at work.
+F|La semana que viene nosotros ___ una fiesta.|hacer|haremos|La semana que viene|Next week we'll have a party.
+F|En dos años mi hija ___ de la universidad.|graduarse|se graduará|En dos años|In two years my daughter will graduate from college.
+F|Si tienes hambre, yo te ___ un sándwich.|preparar|prepararé|Si + presente (tienes) → futuro|If you're hungry, I'll make you a sandwich.
+F|El próximo lunes ellos ___ al trabajo.|volver|volverán|El próximo lunes|Next Monday they'll go back to work.
+F|Mañana yo ___ de casa muy temprano.|salir|saldré|Mañana|Tomorrow I'll leave home very early.
+F|¿Cuándo ___ ustedes la respuesta?|saber|sabrán|a question about later|When will you all know the answer?
+F|Esta noche ___ en las montañas.|nevar|nevará|Esta noche|Tonight it will snow in the mountains.
+F|Algún día nosotros ___ en el campo.|vivir|viviremos|Algún día|Someday we'll live in the countryside.
+F|Mañana yo te ___ todo.|explicar|explicaré|Mañana|Tomorrow I'll explain everything to you.
+F|El año que viene mi hermano ___ treinta años.|cumplir|cumplirá|El año que viene|Next year my brother will turn thirty.
+F|Si no te das prisa, ___ el autobús.|perder|perderás|Si + presente (das) → futuro|If you don't hurry, you'll miss the bus.
+F|Mañana el concierto ___ a las nueve.|empezar|empezará|Mañana|Tomorrow the concert will start at nine.
+F|Dentro de una hora nosotros ___ en casa.|estar|estaremos|Dentro de una hora|In an hour we'll be home.
+F|Te prometo que no lo ___ otra vez.|hacer|haré|Te prometo (a promise about the future)|I promise I won't do it again.
+F|El próximo fin de semana yo ___ al fútbol con mi hijo.|jugar|jugaré|El próximo fin de semana|Next weekend I'll play soccer with my son.
+F|Si llueve, nosotros ___ el partido.|cancelar|cancelaremos|Si + presente (llueve) → futuro|If it rains, we'll cancel the game.
+F|Mañana mis amigos me ___ con la mudanza.|ayudar|ayudarán|Mañana|Tomorrow my friends will help me with the move.
+F|Esta noche yo ___ temprano porque estoy cansado.|acostarse|me acostaré|Esta noche|Tonight I'll go to bed early because I'm tired.
+F|El próximo mes ustedes ___ las vacaciones.|empezar|empezarán|El próximo mes|Next month you all will start your vacation.
+F|¿Qué ___ tú a la fiesta del sábado?|llevar|llevarás|del sábado (coming up)|What will you wear to Saturday's party?
+F|Pronto ___ la primavera.|llegar|llegará|Pronto|Spring will arrive soon.
+F|Mañana por la mañana yo te ___.|llamar|llamaré|Mañana por la mañana|I'll call you tomorrow morning.
+F|En el futuro, nosotros ___ coches eléctricos.|conducir|conduciremos|En el futuro|In the future, we'll drive electric cars.
+F|Si me escribes, yo te ___ enseguida.|contestar|contestaré|Si + presente (escribes) → futuro|If you write to me, I'll answer you right away.
+F|La próxima semana el banco ___ cerrado el lunes.|estar|estará|La próxima semana|Next week the bank will be closed on Monday.
+F|El sábado que viene yo ___ la casa de mi madre.|pintar|pintaré|El sábado que viene|Next Saturday I'll paint my mother's house.
+F|Mañana ellos ___ los resultados.|recibir|recibirán|Mañana|Tomorrow they'll get the results.
+F|Creo que el niño ___ mejor mañana.|sentirse|se sentirá|mañana|I think the boy will feel better tomorrow.
+F|Esta noche, después de la cena, nosotros ___ un paseo.|dar|daremos|Esta noche (later)|Tonight, after dinner, we'll take a walk.
+C|Si tuviera un perro, yo lo ___ cada día.|pasear|pasearía|Si tuviera → condicional|If I had a dog, I would walk it every day.
+C|Yo que tú, ___ más temprano.|acostarse|me acostaría|Yo que tú (advice)|If I were you, I'd go to bed earlier.
+C|¿___ usted repetir eso, por favor?|poder|podría|por favor (polite request)|Could you repeat that, please?
+C|Si viviera en la playa, yo ___ todos los días.|nadar|nadaría|Si viviera → condicional|If I lived at the beach, I would swim every day.
+C|Nos ___ visitar Perú algún día.|gustar|gustaría|Nos gustaría (a wish)|We would like to visit Peru someday.
+C|Ella me dijo que ___ tarde.|llegar|llegaría|me dijo que (reported future)|She told me she would arrive late.
+C|Si tuviéramos una casa más grande, ___ un perro.|adoptar|adoptaríamos|Si tuviéramos → condicional|If we had a bigger house, we would adopt a dog.
+C|Si yo fuera presidente, ___ muchas cosas.|cambiar|cambiaría|Si fuera → condicional|If I were president, I would change many things.
+C|Ustedes ___ comer más verduras.|deber|deberían|advice (should)|You all should eat more vegetables.
+C|Si supiera cocinar, yo ___ para mis amigos.|cocinar|cocinaría|Si supiera → condicional|If I knew how to cook, I would cook for my friends.
+C|¿Qué ___ tú en mi lugar?|hacer|harías|en mi lugar (an imaginary situation)|What would you do in my place?
+C|Mis padres dijeron que nos ___ en el aeropuerto.|esperar|esperarían|dijeron que (reported future)|My parents said they would wait for us at the airport.
+C|Si no tuviera que trabajar, yo ___ todo el día.|dormir|dormiría|Si no tuviera → condicional|If I didn't have to work, I would sleep all day.
+C|Con más tiempo libre, nosotros ___ más.|viajar|viajaríamos|an imaginary situation|With more free time, we would travel more.
+C|Si hablara francés, yo ___ en París.|trabajar|trabajaría|Si hablara → condicional|If I spoke French, I would work in Paris.
+C|¿Te ___ ayudarme con la mudanza?|importar|importaría|¿Te importaría…? (polite request)|Would you mind helping me with the move?
+C|Si tuviera alas, yo ___ por todo el mundo.|volar|volaría|Si tuviera → condicional|If I had wings, I would fly all over the world.
+C|Yo en tu lugar, no ___ ese coche.|comprar|compraría|Yo en tu lugar (advice)|If I were you, I wouldn't buy that car.
+C|El jefe dijo que ___ una reunión el lunes.|haber|habría|dijo que (reported future)|The boss said there would be a meeting on Monday.
+C|Si estuvieras enfermo, tú ___ que ir al médico.|tener|tendrías|Si estuvieras → condicional|If you were sick, you would have to go to the doctor.
+C|Si ellos ganaran más dinero, ___ una casa.|comprar|comprarían|Si ganaran → condicional|If they earned more money, they would buy a house.
+C|Me ___ ir contigo al concierto.|encantar|encantaría|Me encantaría (a polite wish)|I would love to go with you to the concert.
+C|Si fuera más joven, yo ___ en el maratón.|correr|correría|Si fuera → condicional|If I were younger, I would run in the marathon.
+C|Si mi hijo estudiara más, ___ mejores notas.|sacar|sacaría|Si estudiara → condicional|If my son studied more, he would get better grades.
+C|Prometiste que me ___ hoy.|llamar|llamarías|Prometiste que (reported future)|You promised you would call me today.
+C|Si pudiéramos, nosotros ___ en España un año.|vivir|viviríamos|Si pudiéramos → condicional|If we could, we would live in Spain for a year.
+C|Si no hiciera tanto frío, los niños ___ afuera.|jugar|jugarían|Si no hiciera → condicional|If it weren't so cold, the kids would play outside.
+C|¿Qué ___ tus padres si supieran la verdad?|decir|dirían|si supieran → condicional|What would your parents say if they knew the truth?
+C|Si tuviera tu número, te ___ un mensaje.|mandar|mandaría|Si tuviera → condicional|If I had your number, I would send you a message.
+C|Yo pensaba que la tienda ___ abierta.|estar|estaría|pensaba que (future seen from the past)|I thought the store would be open.
+C|Si fuera tú, yo ___ un abrigo.|ponerse|me pondría|Si fuera tú → condicional|If I were you, I would put on a coat.
+C|Si tuviera más paciencia, yo ___ un mejor profesor.|ser|sería|Si tuviera → condicional|If I had more patience, I would be a better teacher.
+C|¿Ustedes ___ a la fiesta si los invitara?|venir|vendrían|si los invitara → condicional|Would you all come to the party if I invited you?
+S|Espero que mañana ___ buen tiempo.|hacer|haga|Espero que (a hope)|I hope the weather is nice tomorrow.
+S|Quiero que tú me ___ la verdad.|decir|digas|Quiero que|I want you to tell me the truth.
+S|Es importante que los niños ___ bien.|dormir|duerman|Es importante que|It's important that kids sleep well.
+S|Ojalá que tú ___ el trabajo.|conseguir|consigas|Ojalá|I hope you get the job.
+S|Me alegra que ustedes ___ aquí.|estar|estén|Me alegra que (an emotion)|I'm glad you all are here.
+S|No creo que ___ mañana.|nevar|nieve|No creo que (doubt)|I don't think it'll snow tomorrow.
+S|Te aconsejo que ___ antes del examen.|descansar|descanses|Te aconsejo que (advice)|I advise you to rest before the exam.
+S|Es posible que nosotros ___ a México en diciembre.|ir|vayamos|Es posible que (uncertainty)|We might go to Mexico in December.
+S|Mi jefe quiere que yo ___ el informe hoy.|terminar|termine|quiere que|My boss wants me to finish the report today.
+S|Dudo que ellos ___ tiempo para ayudarnos.|tener|tengan|Dudo que (doubt)|I doubt they have time to help us.
+S|Cuando yo ___ mayor, quiero vivir en la playa.|ser|sea|Cuando + a future moment|When I'm older, I want to live at the beach.
+S|Te llamo en cuanto yo ___ al hotel.|llegar|llegue|en cuanto + a future moment|I'll call you as soon as I get to the hotel.
+S|Es necesario que tú ___ el formulario.|llenar|llenes|Es necesario que|You need to fill out the form.
+S|Siento que tu padre ___ enfermo.|estar|esté|Siento que (an emotion)|I'm sorry your father is sick.
+S|Prefiero que nosotros ___ en casa esta noche.|quedarse|nos quedemos|Prefiero que|I'd prefer that we stay home tonight.
+S|Les pido a ustedes que ___ más despacio.|hablar|hablen|Les pido que (a request)|I'm asking you all to speak more slowly.
+S|Ojalá que no ___ tráfico.|haber|haya|Ojalá|Hopefully there's no traffic.
+S|Busco a alguien que ___ hablar alemán.|saber|sepa|que + someone not yet found|I'm looking for someone who knows how to speak German.
+S|Es mejor que ustedes ___ temprano.|salir|salgan|Es mejor que|It's better that you all leave early.
+S|Me sorprende que ella no ___ nada.|decir|diga|Me sorprende que (an emotion)|I'm surprised she isn't saying anything.
+S|Antes de que tú ___, quiero hablar contigo.|irse|te vayas|antes de que (always subjunctive)|Before you leave, I want to talk to you.
+S|Es extraño que el perro no ___.|comer|coma|Es extraño que (a reaction)|It's strange that the dog isn't eating.
+S|Te traigo el libro para que lo ___.|leer|leas|para que (always subjunctive)|I'm bringing you the book so that you can read it.
+S|No es seguro que el vuelo ___ a tiempo.|salir|salga|No es seguro que (uncertainty)|It's not certain the flight will leave on time.
+S|Mis padres esperan que yo los ___ en Navidad.|visitar|visite|esperan que|My parents hope I'll visit them at Christmas.
+S|Quiero que ustedes ___ a mi familia.|conocer|conozcan|Quiero que|I want you all to meet my family.
+S|Es una pena que tú ___ que trabajar el sábado.|tener|tengas|Es una pena que (an emotion)|It's a pity you have to work on Saturday.
+S|Cuando nosotros ___ dinero, compraremos una casa.|tener|tengamos|Cuando + a future moment|When we have money, we'll buy a house.
+S|Necesito que tú me ___ las llaves.|dar|des|Necesito que|I need you to give me the keys.
+S|Me encanta que mis hijos ___ juntos.|jugar|jueguen|Me encanta que (an emotion)|I love that my kids play together.
+S|Ojalá que ellos ___ pronto.|volver|vuelvan|Ojalá|I hope they come back soon.
+S|El profesor nos pide que ___ la tarea.|hacer|hagamos|nos pide que (a request)|The teacher asks us to do the homework.
+S|No pienso que ese restaurante ___ caro.|ser|sea|No pienso que (doubt)|I don't think that restaurant is expensive.
+S|Es probable que mi hermana ___ a vernos.|venir|venga|Es probable que|My sister will probably come to see us.`;
+
+const BANK=RAW.split("\n").map((l,i)=>{const [t,s,v,a,clue,en]=l.split("|");return {id:i,t,s,v,a:a.split("/"),clue,en};});
+
+const FORMS={
+ P:{rows:[["hablo","como","vivo"],["hablas","comes","vives"],["habla","come","vive"],["hablamos","comemos","vivimos"],["hablan","comen","viven"]],note:"Irregular yo forms: soy, voy, tengo, hago, digo, pongo, salgo, sé. Stem changes (e→ie, o→ue) happen in every form except nosotros: me despierto, puedo, juegan."},
+ PR:{rows:[["hablé","comí","viví"],["hablaste","comiste","viviste"],["habló","comió","vivió"],["hablamos","comimos","vivimos"],["hablaron","comieron","vivieron"]],note:"Irregular (no accents): fui, hice, tuve, estuve, dije, vine, puse, pude, supe, di, vi. Spelling changes in the yo form: jugué, llegué, empecé."},
+ I:{rows:[["hablaba","comía","vivía"],["hablabas","comías","vivías"],["hablaba","comía","vivía"],["hablábamos","comíamos","vivíamos"],["hablaban","comían","vivían"]],note:"Only three irregulars: era (ser), iba (ir), veía (ver). -ar → -aba, -er/-ir → -ía on the stem."},
+ F:{rows:[["hablaré","comeré","viviré"],["hablarás","comerás","vivirás"],["hablará","comerá","vivirá"],["hablaremos","comeremos","viviremos"],["hablarán","comerán","vivirán"]],note:"Endings go on the whole infinitive. Irregular stems: tendr-, har-, dir-, podr-, saldr-, vendr-, pondr-, sabr-."},
+ C:{rows:[["hablaría","comería","viviría"],["hablarías","comerías","vivirías"],["hablaría","comería","viviría"],["hablaríamos","comeríamos","viviríamos"],["hablarían","comerían","vivirían"]],note:"Same -ía endings as the imperfecto, but on the whole infinitive (comía vs. comería). Same irregular stems as the futuro: tendr-, har-, dir-, podr-…"},
+ S:{rows:[["hable","coma","viva"],["hables","comas","vivas"],["hable","coma","viva"],["hablemos","comamos","vivamos"],["hablen","coman","vivan"]],note:"Swap the vowel: -ar → e, -er/-ir → a. Start from the yo present: tengo → tenga, hago → haga, digo → diga. Irregular: sea, vaya, esté, sepa, dé. Spelling: llegue, juegue, empiece."}
+};
+const PERSONS=["yo","tú","él / ella / usted","nosotros","ellos / ustedes"];
+const PATH={S:["y"],C:["n","y"],F:["n","n","later"],P:["n","n","now"],PR:["n","n","past","once"],I:["n","n","past","bg"]};
+const STEPQ=[
+ "Is there a trigger + que (a wish, emotion, doubt or advice), or ojalá / para que / antes de que?",
+ "Is it imaginary, a “would” situation? (si tuviera / pudiera, yo que tú, me gustaría, dijo que…)",
+ "When does it happen: later, now (or as a habit), or in the past?",
+ "In the past: one finished event, or background / a habit / something in progress?"];
+const STEPA={y:"Yes",n:"No",later:"Later",now:"Now, or as a habit",past:"In the past",once:"One finished event",bg:"Background, a habit, or in progress"};
+const PAIRS=[["PR","I","Pretérito vs. Imperfecto"],["F","C","Futuro vs. Condicional"],["P","S","Presente vs. Subjuntivo"]];
+const MODES={
+ full:{name:"Tense + verb",d:"Pick the tense, then type the verb."},
+ spot:{name:"Spot the tense",d:"Only pick the tense. No typing."},
+ conj:{name:"Conjugate only",d:"The tense is given and its endings table is shown."}
+};
+
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let seen=new Set(store.get("qte-seen",[]));
+let stats=store.get("qte-stats",{});
+for(const k in stats){const s=stats[k];if(s.n!==undefined&&s.nt===undefined){s.nt=s.n;s.nc=s.n;delete s.n}}
+let enabled=new Set(store.get("qte-enabled",ORDER).filter(t=>ORDER.includes(t)));
+if(!enabled.size) ORDER.forEach(t=>enabled.add(t));
+let mode=store.get("qte-mode","full"); if(!MODES[mode]) mode="full";
+if(mode==="spot"&&enabled.size===1){enabled=new Set(ORDER)}
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm=s=>s.toLowerCase().trim().replace(/\s+/g," ").replace(/[.,!?¿¡]/g,"");
+const bare=s=>norm(s).normalize("NFD").replace(/[̀-ͯ]/g,"");
+const same=(a,b)=>a.size===b.size&&[...a].every(x=>b.has(x));
+
+let round=[],idx=0,picked=null,checked=false,results=[],hintI=0,hinted=false;
+
+function eff(){return enabled.size===1?"conj":mode}
+function focusLabel(){
+  if(enabled.size===6) return "All six tenses";
+  for(const [a,b,l] of PAIRS) if(same(enabled,new Set([a,b]))) return l;
+  return ORDER.filter(t=>enabled.has(t)).map(t=>TENSES[t].name).join(" + ")+(enabled.size===1?" only":"");
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function newRound(){
+  let pool=BANK.filter(q=>enabled.has(q.t));
+  let fresh=pool.filter(q=>!seen.has(q.id));
+  if(fresh.length<10){pool.forEach(q=>seen.delete(q.id));fresh=pool.slice()}
+  round=shuffle(fresh).slice(0,10);idx=0;results=[];
+  $("#setup").hidden=true;$("#quiz").hidden=false;
+  renderQ();
+}
+
+function sentenceHTML(q,fill){
+  const [a,b]=q.s.split("___");
+  const mid=fill?`<mark>${esc(fill)}</mark>`:`<span class="blank" aria-label="blank">&nbsp;</span>`;
+  return esc(a)+mid+esc(b)+(fill?"":` <span class="verb">(${esc(q.v)})</span>`);
+}
+
+function tableHTML(t){
+  const F=FORMS[t];
+  return `<div class="ftable" style="--tc:${COLOR[t]}"><div class="scroll"><table><thead><tr><th>${TENSES[t].name}</th><th>hablar</th><th>comer</th><th>vivir</th></tr></thead><tbody>${PERSONS.map((p,i)=>`<tr><th>${p}</th>${F.rows[i].map(f=>`<td>${f}</td>`).join("")}</tr>`).join("")}</tbody></table></div><p class="note">${F.note} Reflexive pronouns: me, te, se, nos, se.</p></div>`;
+}
+
+function hintSteps(q){
+  const p=PATH[q.t],en=[...enabled],out=[];
+  for(let k=0;k<p.length;k++){
+    const pre=p.slice(0,k).join();
+    const cands=en.filter(t=>PATH[t].length>k&&PATH[t].slice(0,k).join()===pre);
+    if(new Set(cands.map(t=>PATH[t][k])).size>1) out.push({q:STEPQ[k],a:STEPA[p[k]]});
+  }
+  return out;
+}
+
+function renderQ(){
+  const q=round[idx],m=eff();
+  picked=m==="conj"?q.t:null;checked=false;hintI=0;hinted=false;
+  const shown=ORDER.filter(t=>enabled.has(t));
+  const cols=shown.length<=2?2:(shown.length===4?2:3);
+  $("#quiz").innerHTML=`
+   <div class="modeline"><span>${MODES[m].name} · ${esc(focusLabel())}</span><button class="link" id="chg" type="button">Change</button></div>
+   <div class="progress"><span>Question ${idx+1} of ${round.length}</span><div class="bar"><i style="width:${idx/round.length*100}%"></i></div></div>
+   <p class="sentence">${sentenceHTML(q)}</p>
+   <div class="trans"><button class="link" id="enBtn" type="button" aria-expanded="false">Show English</button><p class="en" id="enTxt" hidden>${esc(q.en)}</p></div>
+   ${m!=="conj"?`<div>
+     <p class="step-label">1 · Which tense does this need?</p>
+     <div class="chips c${cols}">${shown.map(t=>`<button type="button" class="chip" data-t="${t}" aria-pressed="false" style="--c:${COLOR[t]}"><b>${TENSES[t].name}</b><small>${TENSES[t].en}</small></button>`).join("")}</div>
+     <div class="hintbox"><button class="ghost small" id="hintBtn" type="button">Walk me through it</button><ol class="hints" id="hints"></ol></div>
+   </div>`:`<div class="given" style="--tc:${COLOR[q.t]}"><span class="tag">${TENSES[q.t].name}</span> ${TENSES[q.t].en}</div>${tableHTML(q.t)}`}
+   ${m!=="spot"?`<div>
+     <p class="step-label">${m==="conj"?"Conjugate":"2 · Conjugate"} <em>${esc(q.v)}</em></p>
+     <form class="answer-row" id="f" autocomplete="off">
+       <input id="ans" type="text" spellcheck="false" autocapitalize="off" placeholder="Type the verb form" aria-label="Your answer">
+       <button class="primary" id="check" type="submit">Check</button>
+     </form>
+     <div class="accents">${["á","é","í","ó","ú","ñ"].map(c=>`<button type="button" data-c="${c}" aria-label="Insert ${c}">${c}</button>`).join("")}</div>
+   </div>`:""}
+   <p class="msg" id="msg"></p>
+   <div id="fb"></div>`;
+  $("#chg").onclick=showSetup;
+  $("#enBtn").onclick=()=>{const t=$("#enTxt"),o=t.hidden;t.hidden=!o;$("#enBtn").textContent=o?"Hide English":"Show English";$("#enBtn").setAttribute("aria-expanded",o)};
+  document.querySelectorAll(".chip[data-t]").forEach(b=>b.onclick=()=>{
+    if(checked)return;picked=b.dataset.t;
+    document.querySelectorAll(".chip[data-t]").forEach(c=>c.setAttribute("aria-pressed",c===b));
+    $("#msg").textContent="";
+    if(m==="spot")check();else $("#ans").focus();
+  });
+  if($("#hintBtn")) $("#hintBtn").onclick=()=>showHint(q);
+  document.querySelectorAll(".accents button").forEach(b=>b.onclick=()=>{const i=$("#ans");const s=i.selectionStart??i.value.length,e=i.selectionEnd??s;i.value=i.value.slice(0,s)+b.dataset.c+i.value.slice(e);i.focus();i.setSelectionRange(s+1,s+1)});
+  if($("#f")){$("#f").onsubmit=e=>{e.preventDefault();if(!checked)check()};$("#ans").focus({preventScroll:true})}
+}
+
+function showHint(q){
+  if(checked)return;
+  const steps=hintSteps(q);hinted=true;
+  const list=$("#hints"),btn=$("#hintBtn");
+  if(hintI<steps.length){
+    const s=steps[hintI];
+    list.insertAdjacentHTML("beforeend",`<li><span class="hq">${esc(s.q)}</span><span class="ha">${esc(s.a)}</span></li>`);
+    hintI++;
+    btn.textContent=hintI<steps.length?"Next step":"So which tense is it?";
+  }else{
+    list.insertAdjacentHTML("beforeend",`<li class="final" style="--tc:${COLOR[q.t]}"><span class="ha">It's the <b>${TENSES[q.t].name}</b>. Clue: ${esc(q.clue)}.</span></li>`);
+    btn.hidden=true;
+  }
+}
+
+function check(){
+  const q=round[idx],m=eff(),val=$("#ans")?$("#ans").value:"";
+  if(m!=="conj"&&!picked){$("#msg").textContent="Pick a tense first.";return}
+  if(m!=="spot"&&!val.trim()){$("#msg").textContent="Type your answer.";return}
+  checked=true;
+  const tOk=m==="conj"?null:picked===q.t;
+  let cOk=null,accent=false;
+  if(m!=="spot"){
+    cOk=false;
+    if(q.a.some(a=>norm(a)===norm(val)))cOk=true;
+    else if(q.a.some(a=>bare(a)===bare(val))){cOk=true;accent=true}
+  }
+  results.push({q,picked,val,tOk,cOk,accent,hinted});
+  seen.add(q.id);store.set("qte-seen",[...seen]);
+  const st=stats[q.t]||(stats[q.t]={nt:0,t:0,nc:0,c:0});
+  if(tOk!==null){st.nt++;if(tOk)st.t++}
+  if(cOk!==null){st.nc++;if(cOk)st.c++}
+  store.set("qte-stats",stats);
+
+  document.querySelectorAll(".chip[data-t]").forEach(c=>{c.disabled=true;if(c.dataset.t===q.t)c.classList.add("right");else if(c.dataset.t===picked)c.classList.add("wrong")});
+  if($("#hintBtn"))$("#hintBtn").hidden=true;
+  if($("#ans")){$("#ans").readOnly=true;$(".accents").hidden=true;$("#check").hidden=true}
+  $("#msg").textContent="";
+  const T=TENSES[q.t];
+  const pills=[];
+  if(tOk!==null)pills.push(`<span class="pill ${tOk?"ok":"no"}">Tense: ${tOk?"correct":"it's "+T.name}</span>`);
+  if(cOk!==null)pills.push(`<span class="pill ${cOk?(accent?"almost":"ok"):"no"}">Verb: ${cOk?(accent?"right, check the accent":"correct"):"not quite"}</span>`);
+  if(hinted)pills.push(`<span class="pill hintp">Used a hint</span>`);
+  const last=idx===round.length-1;
+  $("#fb").innerHTML=`<div class="feedback">
+    <div class="verdicts">${pills.join("")}</div>
+    <p class="full">${sentenceHTML(q,q.a[0])}</p>
+    <p class="en">${esc(q.en)}</p>
+    <p class="why" style="--tc:${COLOR[q.t]}"><span class="tag">${T.name}.</span> Clue: <strong>${esc(q.clue)}</strong>. ${T.rule}</p>
+    ${m!=="conj"?`<details class="tdet"><summary>${T.name} endings</summary>${tableHTML(q.t)}</details>`:""}
+    <div class="foot"><button class="primary" id="nextBtn" type="button">${last?"See results":"Next"}</button></div>
+  </div>`;
+  $("#nextBtn").onclick=next;$("#nextBtn").focus();
+}
+
+function next(){idx++;idx<round.length?renderQ():renderResults()}
+
+function renderResults(){
+  const tA=results.filter(r=>r.tOk!==null),cA=results.filter(r=>r.cOk!==null);
+  const tiles=[];
+  if(tA.length)tiles.push(`<div class="score"><b>${tA.filter(r=>r.tOk).length}/${tA.length}</b><span>tenses spotted</span></div>`);
+  if(cA.length)tiles.push(`<div class="score"><b>${cA.filter(r=>r.cOk).length}/${cA.length}</b><span>verbs conjugated</span></div>`);
+  const h=results.filter(r=>r.hinted).length;
+  const miss=results.filter(r=>r.tOk===false||r.cOk===false||r.accent||r.hinted);
+  const detail=r=>{const p=[TENSES[r.q.t].name];if(r.tOk===false)p.push(`you picked ${TENSES[r.picked].name}`);if(r.cOk===false)p.push(`you typed “${esc(r.val)}”`);if(r.accent)p.push("missing accent");if(r.hinted)p.push("used a hint");p.push("clue: "+esc(r.q.clue));return p.join(" · ")};
+  $("#quiz").innerHTML=`<div class="results" style="display:flex;flex-direction:column;gap:18px">
+    <div class="modeline"><span>${MODES[eff()].name} · ${esc(focusLabel())}</span><button class="link" id="chg" type="button">Change</button></div>
+    <h2>Round complete</h2>
+    <div class="scores c${tiles.length}">${tiles.join("")}</div>
+    ${h?`<p class="note">You used hints on ${h} of ${results.length}. Those still count; they're listed below to look at again.</p>`:""}
+    ${miss.length?`<div><p class="step-label">Review these</p><ul class="review">${miss.map(r=>`<li style="--tc:${COLOR[r.q.t]}"><div class="s">${sentenceHTML(r.q,r.q.a[0])}</div><div class="d">${detail(r)}</div></li>`).join("")}</ul></div>`:`<p class="note">A perfect round.</p>`}
+    <div class="btns"><button class="primary" id="again" type="button">New round of 10</button><button class="ghost" id="toSetup" type="button">Change practice</button></div>
+  </div>`;
+  $("#again").onclick=newRound;$("#toSetup").onclick=showSetup;$("#chg").onclick=showSetup;$("#again").focus();
+}
+
+function setFocus(set){enabled=new Set(set);store.set("qte-enabled",[...enabled]);round=[];showSetup()}
+
+function showSetup(){
+  const pool=BANK.filter(q=>enabled.has(q.t)).length;
+  const isAll=enabled.size===6;
+  $("#setup").innerHTML=`
+   <h2>Practice setup</h2>
+   <div><p class="step-label">How to practice</p>
+     <div class="modes">${Object.entries(MODES).map(([k,v])=>`<button type="button" class="mode" data-mode="${k}" aria-pressed="${mode===k}"><b>${v.name}</b><span>${v.d}</span></button>`).join("")}</div>
+   </div>
+   <div class="groups">
+     <div><p class="step-label">Everything mixed</p><div class="toggles"><button type="button" class="chip" data-focus="all" aria-pressed="${isAll}" style="--c:var(--accent)"><b>All six tenses</b></button></div></div>
+     <div><p class="step-label">Confusing pairs</p><div class="toggles">${PAIRS.map(([a,b,l],i)=>`<button type="button" class="chip pair" data-pair="${i}" aria-pressed="${same(enabled,new Set([a,b]))}" style="--c:${COLOR[a]};--c2:${COLOR[b]}"><b>${l}</b></button>`).join("")}</div></div>
+     <div><p class="step-label">One tense at a time</p><div class="toggles">${ORDER.map(t=>`<button type="button" class="chip" data-one="${t}" aria-pressed="${enabled.size===1&&enabled.has(t)}" ${mode==="spot"?"disabled":""} style="--c:${COLOR[t]}"><b>${TENSES[t].name}</b></button>`).join("")}</div>
+     ${mode==="spot"?`<p class="note" style="margin-top:6px">Spotting needs at least two tenses to choose between, so single tenses are off in this mode.</p>`:`<p class="note" style="margin-top:6px">With one tense, the tense is given and its endings table is shown.</p>`}</div>
+   </div>
+   <p class="note">${pool} sentences in this mix · ${seen.size} of ${BANK.length} seen so far. New rounds use sentences you haven't seen yet.</p>
+   <div class="btns"><button class="primary" id="start" type="button">Start a round of 10</button></div>
+   <div><p class="step-label">How you're doing, by tense</p>
+     <div class="stats">${ORDER.map(t=>{const s=stats[t]||{};const pct=s.nt?Math.round(s.t/s.nt*100):(s.nc?Math.round(s.c/s.nc*100):0);const parts=[];if(s.nt)parts.push(`spotted ${s.t}/${s.nt}`);if(s.nc)parts.push(`verb ${s.c}/${s.nc}`);return `<div class="stat" style="--tc:${COLOR[t]}"><span>${TENSES[t].name}</span><div class="track"><i style="width:${pct}%"></i></div><span class="n">${parts.join(" · ")||"not yet"}</span></div>`}).join("")}</div>
+   </div>
+   <details><summary>The four questions</summary><ol class="guideq">${STEPQ.map((s,i)=>`<li>${esc(s)}<span class="note"> ${["Yes → Subjuntivo","Yes → Condicional","Later → Futuro · Now → Presente · Past → question 4","Finished → Pretérito · Background → Imperfecto"][i]}</span></li>`).join("")}</ol></details>
+   <details><summary>Tense guide and endings</summary><div class="guide">${ORDER.map(t=>`<div style="--tc:${COLOR[t]}"><b>${TENSES[t].name}</b> (${TENSES[t].en}). ${TENSES[t].rule}<br><span class="note">Clues: ${TENSES[t].clues}.</span>${tableHTML(t)}</div>`).join("")}</div></details>
+   <div class="btns"><button class="ghost" id="reset" type="button">Reset progress</button></div>`;
+  document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;store.set("qte-mode",mode);if(mode==="spot"&&enabled.size===1){enabled=new Set(ORDER);store.set("qte-enabled",[...enabled])}round=[];showSetup()});
+  document.querySelector("[data-focus]").onclick=()=>setFocus(ORDER);
+  document.querySelectorAll("[data-pair]").forEach(b=>b.onclick=()=>{const p=PAIRS[+b.dataset.pair];setFocus([p[0],p[1]])});
+  document.querySelectorAll("[data-one]").forEach(b=>b.onclick=()=>setFocus([b.dataset.one]));
+  $("#start").onclick=newRound;
+  $("#reset").onclick=()=>{const b=$("#reset");if(b.dataset.armed){seen=new Set();stats={};store.set("qte-seen",[]);store.set("qte-stats",{});showSetup()}else{b.dataset.armed=1;b.textContent="Click again to reset"}};
+  $("#quiz").hidden=true;$("#setup").hidden=false;
+  $("#setupBtn").textContent="Back to practice";
+}
+
+$("#setupBtn").onclick=()=>{
+  if($("#setup").hidden){showSetup()}
+  else{$("#setupBtn").textContent="Practice setup";$("#setup").hidden=true;$("#quiz").hidden=false;if(!round.length)newRound()}
+};
+const _nr=newRound;newRound=function(){$("#setupBtn").textContent="Practice setup";_nr()};
+newRound();
+</script>
+
+</body></html>
