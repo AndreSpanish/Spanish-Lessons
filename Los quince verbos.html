@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Los quince verbos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F6FB; --surface:#FFFFFF; --tile:#E9EFFA; --ink:#14213D; --muted:#56658A;
+  --cobalt:#2348A8; --cobalt-soft:#D6E0F7; --saffron:#F2B233; --saffron-soft:#FCEBC4;
+  --ok:#23845A; --ok-soft:#D7F0E3; --bad:#C2412D; --bad-soft:#F8DDD7; --line:#CBD6EC;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1530; --surface:#16204A; --tile:#1D2A5C; --ink:#E8EEFA; --muted:#A3B1D6;
+    --cobalt:#89A8FF; --cobalt-soft:#25356F; --saffron:#F5C04E; --saffron-soft:#4A3A12;
+    --ok:#5FD39A; --ok-soft:#16402F; --bad:#FF8A73; --bad-soft:#4A1F18; --line:#2D3B72;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1530; --surface:#16204A; --tile:#1D2A5C; --ink:#E8EEFA; --muted:#A3B1D6;
+  --cobalt:#89A8FF; --cobalt-soft:#25356F; --saffron:#F5C04E; --saffron-soft:#4A3A12;
+  --ok:#5FD39A; --ok-soft:#16402F; --bad:#FF8A73; --bad-soft:#4A1F18; --line:#2D3B72;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,9vw,3.6rem);line-height:.95;letter-spacing:-.02em;margin:8px 0 6px}
+h1 span{display:inline-block;background:var(--cobalt);color:var(--bg);padding:0 .15em;border-radius:6px;transform:rotate(-2deg)}
+.lede{color:var(--muted);margin:0 0 18px;max-width:52ch}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;padding:8px 0 10px;margin-bottom:8px}
+nav.tabs button{flex:1;font:700 1rem var(--body);padding:10px 8px;border-radius:999px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,input:focus-visible,label:focus-within{outline:3px solid var(--saffron);outline-offset:2px}
+.scroller{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none}
+.scroller::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;font:700 1rem var(--display);padding:8px 14px;border-radius:10px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--bg)}
+.chip small{font:400 .8rem var(--body);display:block;opacity:.8}
+.verbhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:14px 0 4px}
+.verbhead h2{font-family:var(--display);font-weight:800;font-size:2.6rem;margin:0;line-height:1}
+.verbhead p{margin:0;color:var(--muted)}
+.tense-desc{margin:4px 0 12px;color:var(--muted)}
+.tense-desc b{color:var(--ink)}
+/* the azulejo grid */
+.tiles{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,auto);grid-auto-flow:column;gap:6px;padding:6px;background:var(--cobalt);border-radius:14px}
+.tile{background:var(--tile);border-radius:8px;padding:10px 12px;min-height:74px;position:relative}
+.tile .pn{font-size:.82rem;color:var(--muted)}
+.tile .form{font:700 1.45rem/1.15 var(--display);word-break:break-word}
+.tile .form mark{background:none;color:inherit;box-shadow:inset 0 -.42em 0 var(--saffron-soft);border-bottom:3px solid var(--saffron)}
+.tile.hide-v{opacity:.35}
+.tile.in-boot{background:var(--saffron-soft)}
+.legend{font-size:.85rem;color:var(--muted);margin:8px 2px 0}
+.legend mark{background:none;color:var(--ink);border-bottom:3px solid var(--saffron);box-shadow:inset 0 -.42em 0 var(--saffron-soft);font-weight:700}
+.note{background:var(--surface);border-left:6px solid var(--saffron);border-radius:4px 12px 12px 4px;padding:12px 14px;margin:14px 0}
+.note h3{font:700 1.05rem var(--display);margin:0 0 4px}
+.note p{margin:0}
+.note p+p{margin-top:6px}
+.note.verbwide{border-left-color:var(--cobalt)}
+.panel{background:var(--surface);border-radius:14px;padding:16px;margin:12px 0;border:1px solid var(--line)}
+.panel h3{font:700 1.15rem var(--display);margin:0 0 10px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.toggle{display:flex;align-items:center;gap:10px;margin:8px 0;cursor:pointer}
+.toggle input{width:20px;height:20px;accent-color:var(--cobalt)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn{font:700 1rem var(--body);padding:12px 18px;border-radius:12px;border:2px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.small{padding:6px 12px;font-size:.9rem}
+.card{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:14px 14px 16px;margin-top:4px;scroll-margin-top:calc(env(safe-area-inset-top,0px) + 72px)}
+.prompt-meta{color:var(--muted);font-size:.88rem;line-height:1.3}
+.prompt{font-family:var(--display);font-weight:800;font-size:clamp(1.8rem,8vw,2.6rem);line-height:1.05;margin:4px 0 10px}
+.prompt .pron{color:var(--cobalt)}
+.answer{width:100%;font:700 1.4rem var(--display);padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.answer.ok{border-color:var(--ok);background:var(--ok-soft)}
+.answer.bad{border-color:var(--bad);background:var(--bad-soft)}
+.answer-row{display:flex;gap:8px;align-items:stretch}
+.answer-row .answer{flex:1;min-width:0;width:auto}
+.answer-row .btn{flex:0 0 auto}
+body.quizzing .hero{display:none}
+.extra-btn{margin-top:10px;border-color:var(--saffron)}
+.chip.extra{border-style:dashed}
+.chip.extra[aria-pressed="true"]{border-style:solid}
+.verb-sep{flex:0 0 auto;width:2px;background:var(--line);margin:4px;border-radius:2px}
+.accents{display:flex;gap:6px;margin:10px 0}
+.accents button{flex:1;font:700 1.2rem var(--display);padding:8px 0;border-radius:10px;border:2px solid var(--line);background:var(--tile);color:var(--ink);cursor:pointer}
+.feedback{margin-top:10px;padding:10px 14px;border-radius:12px;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:var(--ok-soft)}
+.feedback.bad{background:var(--bad-soft)}
+.feedback .big{font:700 1.3rem var(--display)}
+.stats{display:flex;gap:18px;color:var(--muted);font-size:.95rem;margin-top:12px}
+.stats b{color:var(--ink);font-family:var(--display);font-size:1.15rem}
+.grid-wrap{overflow-x:auto}
+table.mastery{border-collapse:separate;border-spacing:4px;width:100%;min-width:480px}
+table.mastery th{font:700 .8rem var(--body);color:var(--muted);text-align:center;padding:2px}
+table.mastery th.v{text-align:left;font:700 1rem var(--display);color:var(--ink);white-space:nowrap}
+table.mastery td{height:38px;border-radius:6px;text-align:center;font:700 .8rem var(--body);cursor:pointer;color:var(--ink)}
+.empty{color:var(--muted)}
+.hidden{display:none !important}
+@media (min-width:600px){ .tiles{gap:8px;padding:8px} .tile .form{font-size:1.7rem} }
+@media (prefers-reduced-motion: no-preference){ .card.pop{animation:pop .25s ease-out} @keyframes pop{from{transform:scale(.98);opacity:.6}to{transform:none;opacity:1}} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+  <h1>Los quince <span>verbos</span></h1>
+  <p class="lede">Fifteen verbs that do most of the work in Spanish, in the seven simple tenses: start with the core ten, then add the next five when you’re ready. Study a table, then drill it until the grid turns green.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="learn">Learn</button>
+    <button role="tab" aria-selected="false" data-tab="practice">Practice</button>
+    <button role="tab" aria-selected="false" data-tab="progress">Progress</button>
+  </nav>
+
+  <!-- LEARN -->
+  <section id="learn">
+    <div class="scroller" id="verbChips" aria-label="Verb"></div>
+    <div class="scroller" id="tenseChips" aria-label="Tense"></div>
+    <div class="verbhead"><h2 id="vInf"></h2><p id="vMeaning"></p></div>
+    <p class="tense-desc" id="tDesc"></p>
+    <div class="tiles" id="tiles"></div>
+    <p class="legend">Highlighted letters are where the verb breaks the regular pattern — <mark>these</mark> are what to memorize.</p>
+    <p class="legend hidden" id="bootNote">Boot verb: the stem changes in the shaded boot (yo, tú, él, ellos) but not in nosotros and vosotros.</p>
+    <div class="note verbwide" id="noteVerb"><h3></h3></div>
+    <div class="row"><button class="btn" id="drillThis">Drill this table</button></div>
+  </section>
+
+  <!-- PRACTICE -->
+  <section id="practice" class="hidden">
+    <div class="panel" id="setup">
+      <h3>Verbs</h3>
+      <div class="opts" id="pVerbs"></div>
+      <div class="row"><button class="btn ghost small" data-all="pVerbs">All</button><button class="btn ghost small" data-none="pVerbs">None</button></div>
+      <button class="btn ghost small extra-btn" id="extraBtn" type="button"></button>
+      <h3 style="margin-top:16px">Tenses</h3>
+      <div class="opts" id="pTenses"></div>
+      <div class="row"><button class="btn ghost small" data-all="pTenses">All</button><button class="btn ghost small" data-none="pTenses">None</button></div>
+      <label class="toggle"><input type="checkbox" id="optVos"> Include vosotros (used in Spain)</label>
+      <label class="toggle"><input type="checkbox" id="optAcc" checked> Accents count (está ≠ esta)</label>
+      <div class="row"><button class="btn" id="startBtn">Start practice</button></div>
+      <p class="empty hidden" id="setupErr">Pick at least one verb and one tense.</p>
+    </div>
+
+    <div id="quiz" class="hidden">
+      <div class="card" id="qCard">
+        <div class="prompt-meta" id="qMeta"></div>
+        <div class="prompt" id="qPrompt"></div>
+        <div class="answer-row">
+          <input class="answer" id="qInput" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Type the form" aria-label="Your answer">
+          <button class="btn" id="checkBtn" type="button">Check</button>
+        </div>
+        <div class="feedback" id="qFeedback"></div>
+        <div class="accents" id="accentBar"></div>
+        <button class="btn ghost small" id="hintBtn" type="button">Show trick</button>
+      </div>
+      <div class="stats"><span>Streak <b id="sStreak">0</b></span><span>This session <b id="sScore">0/0</b></span></div>
+      <div class="row"><button class="btn ghost small" id="backSetup">Change verbs or tenses</button></div>
+    </div>
+  </section>
+
+  <!-- PROGRESS -->
+  <section id="progress" class="hidden">
+    <p class="lede">Each square is one verb in one tense. It fills in as you answer each person right three times in a row. Tap a square to drill it.</p>
+    <div class="grid-wrap"><table class="mastery" id="mTable"></table></div>
+    <div class="row"><button class="btn ghost small" id="resetBtn">Reset progress</button></div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+const PERSONS = ["yo","tú","él / ella / usted","nosotros","vosotros","ellos / ellas / ustedes"];
+const PRON_SHORT = ["yo","tú","él","nosotros","vosotros","ellos"];
+const TENSES = [
+  {id:"pres", name:"Present", es:"presente", use:"I do / I’m doing",
+   trick:"Most of these ten are irregular here. Watch for yo-go verbs (tengo, hago, digo) and boot verbs, which change their stem in every form except nosotros and vosotros — draw a boot around the other four boxes."},
+  {id:"pret", name:"Preterite", es:"pretérito", use:"I did — a finished, one-time past action",
+   trick:"Irregular stems (estuv-, tuv-, pud-, sup-, hub-, hic-, quis-, dij-) all take one shared set of endings with no accents: -e, -iste, -o, -imos, -isteis, -ieron. Ser and ir share every form."},
+  {id:"imp", name:"Imperfect", es:"imperfecto", use:"I used to / I was doing — background and habits",
+   trick:"The easiest tense. Only three verbs in all of Spanish are irregular: ser, ir and ver. Everything else: -ar → -aba, -er/-ir → -ía."},
+  {id:"fut", name:"Future", es:"futuro", use:"I will",
+   trick:"Put the endings on the whole infinitive: -é, -ás, -á, -emos, -éis, -án. Irregular verbs only change the stem, and the conditional uses the exact same stems."},
+  {id:"cond", name:"Conditional", es:"condicional", use:"I would",
+   trick:"Same stem as the future plus -ía, -ías, -ía, -íamos, -íais, -ían. Learn the future and you get this tense free."},
+  {id:"subj", name:"Present subjunctive", es:"presente de subjuntivo", use:"that I do — wishes, doubts, emotions (quiero que…)",
+   trick:"Take the yo present, drop the -o, and swap the vowel: -ar verbs get -e endings, -er/-ir verbs get -a. Tengo → tenga, digo → diga. The exceptions spell DISHES: dar, ir, ser, haber, estar, saber."},
+  {id:"impsubj", name:"Imperfect subjunctive", es:"imperfecto de subjuntivo", use:"if I did / that I did — hypotheticals (si yo fuera…)",
+   trick:"Take the ellos preterite, drop -ron, add -ra, -ras, -ra, -ramos, -rais, -ran. Fueron → fuera, dijeron → dijera. It works for every verb in Spanish; nosotros gets an accent: fuéramos."}
+];
+const w = s => s.split(" ");
+const VERBS = [
+ {inf:"ser", en:"to be (what something is)", pres:w("soy eres es somos sois son"), pret:w("fui fuiste fue fuimos fuisteis fueron"), imp:w("era eras era éramos erais eran"), futStem:"ser", subj:w("sea seas sea seamos seáis sean"),
+  big:"Use ser for what something is: Description, Occupation, Characteristic, Time, Origin, Relationship — DOCTOR. Soy alta, es médico, son las tres.",
+  notes:{pres:"Pure memorization — no pattern. Say them as a chant: soy, eres, es, somos, sois, son.", pret:"Identical to ir. Fui means “I was” or “I went”; the sentence tells you which.", imp:"One of only three irregular imperfects in the language. Note the accent on éramos.", fut:"Completely regular: seré.", subj:"A DISHES verb, so the yo-form trick doesn’t apply. Sea, seas, sea…", impsubj:"Fuera is shared with ir too — same as the preterite."}},
+ {inf:"estar", en:"to be (how and where)", pres:w("estoy estás está estamos estáis están"), pret:w("estuve estuviste estuvo estuvimos estuvisteis estuvieron"), futStem:"estar", subj:w("esté estés esté estemos estéis estén"),
+  big:"Use estar for how and where: Position, Location, Action in progress, Condition, Emotion — PLACE. Estoy cansado, está en casa, estamos comiendo.",
+  notes:{pres:"Yo ends in -oy like soy and voy. Every other form except estamos carries an accent.", pret:"U-stem group: estuv- plus -e, -iste, -o, -imos, -isteis, -ieron. No accents.", imp:"Regular: estaba.", fut:"Regular: estaré.", subj:"A DISHES verb. It keeps the accents: esté, estés, estén.", impsubj:"From estuvieron → estuviera."}},
+ {inf:"tener", en:"to have", pres:w("tengo tienes tiene tenemos tenéis tienen"), pret:w("tuve tuviste tuvo tuvimos tuvisteis tuvieron"), futStem:"tendr", subj:w("tenga tengas tenga tengamos tengáis tengan"),
+  big:"Yo-go verb plus boot verb. Also used where English says “to be”: tengo hambre (I’m hungry), tengo veinte años (I’m twenty). Tener que + infinitive = “have to.”",
+  notes:{pres:"Tengo (yo-go), then e → ie inside the boot: tienes, tiene, tienen. Tenemos and tenéis stay outside it.", pret:"U-stem: tuv-. In the preterite it often means “got” or “received”: tuve una carta.", imp:"Regular: tenía.", fut:"Stem tendr-: the e drops and a d slides in. Tendré.", subj:"From tengo: drop -o, add -a → tenga. The yo-form trick working perfectly.", impsubj:"From tuvieron → tuviera."}},
+ {inf:"haber", en:"to have (done) · there is", pres:w("he has ha hemos habéis han"), pret:w("hube hubiste hubo hubimos hubisteis hubieron"), futStem:"habr", subj:w("haya hayas haya hayamos hayáis hayan"),
+  big:"Haber builds the perfect tenses: he comido (I have eaten), había comido (I had eaten). Its special form hay means “there is / there are.” It never means “to own” — that’s tener.",
+  notes:{pres:"With a participle use ha: ha llegado. For “there is/are” use hay instead.", pret:"Mostly heard as hubo: “there was” for one event (hubo un accidente).", imp:"Había also means “there was/were” for background: había mucha gente.", fut:"Stem habr-: the e drops.", subj:"A DISHES verb: haya. Ojalá que haya tiempo.", impsubj:"From hubieron → hubiera. Si hubiera sabido… (if I had known…)."}},
+ {inf:"hacer", en:"to do, to make", pres:w("hago haces hace hacemos hacéis hacen"), pret:w("hice hiciste hizo hicimos hicisteis hicieron"), futStem:"har", subj:w("haga hagas haga hagamos hagáis hagan"),
+  big:"Yo-go verb. Also covers weather (hace frío, hace sol) and “ago” (hace dos años = two years ago).",
+  notes:{pres:"Only hago is irregular; the rest is a regular -er verb.", pret:"I-stem hic-. The él form is spelled hizo — the z keeps the same sound before o.", imp:"Regular: hacía.", fut:"Stem har-: the -ce- chops off. Haré.", subj:"From hago → haga.", impsubj:"From hicieron → hiciera."}},
+ {inf:"ir", en:"to go", pres:w("voy vas va vamos vais van"), pret:w("fui fuiste fue fuimos fuisteis fueron"), imp:w("iba ibas iba íbamos ibais iban"), futStem:"ir", subj:w("vaya vayas vaya vayamos vayáis vayan"),
+  big:"Ir a + infinitive is the everyday future: voy a comer (I’m going to eat). Many speakers use it far more than the future tense.",
+  notes:{pres:"Yo ends in -oy like soy and estoy. After that it’s just v + -a endings: vas, va, vamos, vais, van.", pret:"Identical to ser: fui, fuiste, fue… Context tells you “went” or “was.”", imp:"Iba — one of only three irregular imperfects. Accent on íbamos.", fut:"Regular! Endings go on the whole infinitive: iré, irás, irá.", subj:"A DISHES verb: vaya. ¡Vaya! also works as an exclamation, like “wow.”", impsubj:"From fueron → fuera, same as ser."}},
+ {inf:"poder", en:"to be able to, can", pres:w("puedo puedes puede podemos podéis pueden"), pret:w("pude pudiste pudo pudimos pudisteis pudieron"), futStem:"podr", subj:w("pueda puedas pueda podamos podáis puedan"),
+  big:"Boot verb o → ue. Followed directly by an infinitive: puedo ir. In the preterite it changes meaning: pude = I managed to; no pude = I tried and failed.",
+  notes:{pres:"o → ue inside the boot: puedo, puedes, puede, pueden. Podemos and podéis stay outside.", pret:"U-stem pud-.", imp:"Regular: podía. Use it for “could” as ongoing ability in the past.", fut:"Stem podr-: the e drops. Podré.", subj:"From puedo → pueda, and the boot still applies: podamos, podáis.", impsubj:"From pudieron → pudiera."}},
+ {inf:"decir", en:"to say, to tell", pres:w("digo dices dice decimos decís dicen"), pret:w("dije dijiste dijo dijimos dijisteis dijeron"), futStem:"dir", subj:w("diga digas diga digamos digáis digan"),
+  big:"Yo-go verb plus an e → i stem change. ¿Cómo se dice…? = How do you say…?",
+  notes:{pres:"Digo, then e → i in the boot: dices, dice, dicen. Decimos and decís keep the e.", pret:"J-stem dij-. Ellos is dijeron — after a j, the i of -ieron disappears.", imp:"Regular: decía.", fut:"Stem dir-: the -ec- chops out. Diré.", subj:"From digo → diga.", impsubj:"From dijeron → dijera (no i after the j)."}},
+ {inf:"querer", en:"to want, to love", pres:w("quiero quieres quiere queremos queréis quieren"), pret:w("quise quisiste quiso quisimos quisisteis quisieron"), futStem:"querr", subj:w("quiera quieras quiera queramos queráis quieran"),
+  big:"Boot verb e → ie. Te quiero = I love you (to people). In the preterite: quise = I tried; no quise = I refused.",
+  notes:{pres:"e → ie inside the boot: quiero, quieres, quiere, quieren.", pret:"I-stem quis-, spelled with s.", imp:"Regular: quería. Use it for plain past wanting.", fut:"Stem querr-: the e drops, leaving a double r. Querré.", subj:"From quiero → quiera; the boot still applies: queramos.", impsubj:"From quisieron → quisiera. Quisiera un café = I’d like a coffee (very polite)."}},
+ {inf:"saber", en:"to know (facts, how to)", pres:w("sé sabes sabe sabemos sabéis saben"), pret:w("supe supiste supo supimos supisteis supieron"), futStem:"sabr", subj:w("sepa sepas sepa sepamos sepáis sepan"),
+  big:"Know facts or know how to: sé nadar = I can swim. For knowing people and places use conocer. In the preterite, supe = I found out.",
+  notes:{pres:"Only yo is irregular: sé. The accent tells it apart from the pronoun se.", pret:"U-stem sup-.", imp:"Regular: sabía.", fut:"Stem sabr-: the e drops. Sabré.", subj:"A DISHES verb: sepa, not built from sé.", impsubj:"From supieron → supiera."}},
+ {inf:"venir", en:"to come", extra:true, pres:w("vengo vienes viene venimos venís vienen"), pret:w("vine viniste vino vinimos vinisteis vinieron"), futStem:"vendr", subj:w("venga vengas venga vengamos vengáis vengan"),
+  big:"Works just like tener: yo-go plus e → ie, and a d in the future stem (vendré like tendré). If you know tener, you nearly know venir.",
+  notes:{pres:"Vengo (yo-go), then e → ie in the boot: vienes, viene, vienen. Venimos and venís stay outside the boot.", pret:"I-stem vin-: vine, viniste, vino. No accents.", imp:"Regular: venía.", fut:"Stem vendr-: same move as tendr-. Vendré.", subj:"From vengo → venga.", impsubj:"From vinieron → viniera."}},
+ {inf:"poner", en:"to put, to place", extra:true, pres:w("pongo pones pone ponemos ponéis ponen"), pret:w("puse pusiste puso pusimos pusisteis pusieron"), futStem:"pondr", subj:w("ponga pongas ponga pongamos pongáis pongan"),
+  big:"Yo-go verb with a U-stem preterite. Ponerse means to put on clothes or to become: se puso rojo (he turned red).",
+  notes:{pres:"Only pongo is irregular.", pret:"U-stem pus-: puse, pusiste, puso. It joins estuve, tuve, pude and supe.", imp:"Regular: ponía.", fut:"Stem pondr-: the e drops and a d slides in, like tendr- and vendr-.", subj:"From pongo → ponga.", impsubj:"From pusieron → pusiera."}},
+ {inf:"salir", en:"to leave, to go out", extra:true, pres:w("salgo sales sale salimos salís salen"), pret:w("salí saliste salió salimos salisteis salieron"), futStem:"saldr", subj:w("salga salgas salga salgamos salgáis salgan"),
+  big:"A yo-go verb that’s otherwise very regular. Salir de = to leave a place: salgo de casa a las ocho.",
+  notes:{pres:"Only salgo is irregular.", pret:"Completely regular -ir: salí, saliste, salió.", imp:"Regular: salía.", fut:"Stem saldr-: the i drops and a d slides in. Saldré.", subj:"From salgo → salga.", impsubj:"From salieron → saliera."}},
+ {inf:"dar", en:"to give", extra:true, pres:w("doy das da damos dais dan"), pret:w("di diste dio dimos disteis dieron"), futStem:"dar", subj:w("dé des dé demos deis den"),
+  big:"Short and mostly regular. Dar un paseo = to take a walk; me da igual = I don’t mind.",
+  notes:{pres:"Yo ends in -oy like soy, estoy and voy. Vosotros has no accent: dais.", pret:"The trap: it’s an -ar verb but takes -er/-ir endings. Di, diste, dio — no accents on one-syllable forms.", imp:"Regular -ar: daba.", fut:"Regular: daré.", subj:"The D of DISHES. Dé has an accent to tell it apart from de (of); the other forms don’t.", impsubj:"From dieron → diera."}},
+ {inf:"ver", en:"to see, to watch", extra:true, pres:w("veo ves ve vemos veis ven"), pret:w("vi viste vio vimos visteis vieron"), imp:w("veía veías veía veíamos veíais veían"), futStem:"ver", subj:w("vea veas vea veamos veáis vean"),
+  big:"Keeps an extra e from its old form “veer” in a few places: veo, veía, vea. A ver… = let’s see…",
+  notes:{pres:"Only veo is irregular. Veis has no accent because it’s one syllable.", pret:"Regular endings but no accents, since vi and vio are one syllable.", imp:"The third irregular imperfect, after ser and ir: veía keeps the e.", fut:"Regular: veré.", subj:"From veo → vea.", impsubj:"From vieron → viera."}}
+];
+
+// ---- generation ----
+const FUT_END=w("é ás á emos éis án"), COND_END=w("ía ías ía íamos íais ían");
+VERBS.forEach(v=>{
+  const type=v.inf.slice(-2), stem=v.inf.slice(0,-2);
+  if(!v.imp) v.imp = type==="ar" ? w("aba abas aba ábamos abais aban").map(e=>stem+e) : COND_END.map(e=>stem+e);
+  v.fut = FUT_END.map(e=>v.futStem+e);
+  v.cond = COND_END.map(e=>v.futStem+e);
+  const is = v.pret[5].slice(0,-3);
+  const isAcc = is.slice(0,-1)+"é";
+  v.impsubj = ["ra","ras","ra",null,"rais","ran"].map(e=> e===null ? isAcc+"ramos" : is+e);
+});
+function regular(v,t){
+  const type=v.inf.slice(-2), s=v.inf.slice(0,-2), inf=v.inf;
+  const E={
+    ar:{pres:"o as a amos áis an",pret:"é aste ó amos asteis aron",imp:"aba abas aba ábamos abais aban",subj:"e es e emos éis en",impsubj:"ara aras ara áramos arais aran"},
+    er:{pres:"o es e emos éis en",pret:"í iste ió imos isteis ieron",imp:"ía ías ía íamos íais ían",subj:"a as a amos áis an",impsubj:"iera ieras iera iéramos ierais ieran"},
+    ir:{pres:"o es e imos ís en",pret:"í iste ió imos isteis ieron",imp:"ía ías ía íamos íais ían",subj:"a as a amos áis an",impsubj:"iera ieras iera iéramos ierais ieran"}
+  }[type];
+  if(t==="fut") return FUT_END.map(e=>inf+e);
+  if(t==="cond") return COND_END.map(e=>inf+e);
+  return w(E[t]).map(e=>s+e);
+}
+function highlight(actual, reg){
+  if(actual===reg) return esc(actual);
+  let p=0; while(p<actual.length && p<reg.length && actual[p]===reg[p]) p++;
+  let q=0; while(q<actual.length-p && q<reg.length-p && actual[actual.length-1-q]===reg[reg.length-1-q]) q++;
+  const mid=actual.slice(p, actual.length-q);
+  if(!mid) return esc(actual);
+  return esc(actual.slice(0,p))+"<mark>"+esc(mid)+"</mark>"+esc(actual.slice(actual.length-q));
+}
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+// ---- storage ----
+const KEY="losdiez-v1";
+let store={m:{}, vos:false, acc:true, extra:false, pv:VERBS.filter(v=>!v.extra).map(v=>v.inf), pt:TENSES.map(t=>t.id)};
+try{ const raw=localStorage.getItem(KEY); if(raw){ store=Object.assign(store, JSON.parse(raw)); } }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
+
+// ---- tabs ----
+const $=id=>document.getElementById(id);
+document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+function showTab(id){
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===id));
+  ["learn","practice","progress"].forEach(s=>$(s).classList.toggle("hidden", s!==id));
+  if(id==="progress") renderMastery();
+  syncHero();
+  window.scrollTo({top:0});
+}
+function syncHero(){ document.body.classList.toggle("quizzing", !$("practice").classList.contains("hidden") && !$("quiz").classList.contains("hidden")); }
+
+// ---- learn ----
+let curV=0, curT=0;
+function chip(label, sub, pressed, onclick){
+  const b=document.createElement("button"); b.className="chip"; b.type="button";
+  b.innerHTML=esc(label)+(sub?"<small>"+esc(sub)+"</small>":"");
+  b.setAttribute("aria-pressed", pressed); b.addEventListener("click", onclick); return b;
+}
+function renderLearn(){
+  const vc=$("verbChips"), vsl=vc.scrollLeft; vc.innerHTML="";
+  VERBS.forEach((v,i)=>{
+    if(v.extra && !VERBS[i-1].extra){ const s=document.createElement("span"); s.className="verb-sep"; s.setAttribute("aria-hidden","true"); vc.appendChild(s); }
+    const c=chip(v.inf,"",i===curV,()=>{curV=i;renderLearn();}); if(v.extra) c.classList.add("extra"); vc.appendChild(c);
+  });
+  vc.scrollLeft=vsl;
+  const tc=$("tenseChips"), tsl=tc.scrollLeft; tc.innerHTML="";
+  TENSES.forEach((t,i)=>tc.appendChild(chip(t.name,t.es,i===curT,()=>{curT=i;renderLearn();})));
+  tc.scrollLeft=tsl;
+  const v=VERBS[curV], t=TENSES[curT];
+  $("vInf").textContent=v.inf; $("vMeaning").textContent=v.en;
+  $("tDesc").innerHTML="<b>"+esc(t.name)+"</b> — "+esc(t.use);
+  const forms=v[t.id], reg=regular(v,t.id);
+  const isBoot=[0,1,2,5].every(i=>strip(forms[i])!==strip(reg[i])) && [3,4].every(i=>forms[i]===reg[i]);
+  $("bootNote").classList.toggle("hidden",!isBoot);
+  $("tiles").innerHTML=forms.map((f,i)=>{
+    let shown=highlight(f,reg[i]);
+    if(v.inf==="haber" && t.id==="pres" && i===2) shown+=" <span class='pn'>(hay)</span>";
+    return "<div class='tile"+(isBoot&&i!==3&&i!==4?" in-boot":"")+"'><div class='pn'>"+esc(PERSONS[i])+"</div><div class='form'>"+shown+"</div></div>";
+  }).join("");
+  const nv=$("noteVerb");
+  nv.innerHTML="<h3>"+esc(v.inf)+" in the "+esc(t.name.toLowerCase())+"</h3><p>"+esc(v.notes[t.id])+"</p><p>"+esc(v.big)+"</p>";
+}
+$("drillThis").addEventListener("click",()=>{
+  if(VERBS[curV].extra) store.extra=true;
+  store.pv=[VERBS[curV].inf]; store.pt=[TENSES[curT].id]; save(); renderSetup(); startQuiz(); showTab("practice");
+});
+
+// ---- practice setup ----
+function renderSetup(){
+  const pv=$("pVerbs"); pv.innerHTML="";
+  VERBS.filter(v=>!v.extra||store.extra).forEach(v=>{ const c=chip(v.inf,"",store.pv.includes(v.inf),function(){ toggleIn(store.pv,v.inf); this.setAttribute("aria-pressed",store.pv.includes(v.inf)); save(); }); if(v.extra) c.classList.add("extra"); pv.appendChild(c); });
+  $("extraBtn").textContent = store.extra ? "Remove the next five verbs" : "Add the next five: venir, poner, salir, dar, ver";
+  const pt=$("pTenses"); pt.innerHTML="";
+  TENSES.forEach(t=>pt.appendChild(chip(t.name,"",store.pt.includes(t.id),function(){ toggleIn(store.pt,t.id); this.setAttribute("aria-pressed",store.pt.includes(t.id)); save(); })));
+  $("optVos").checked=store.vos; $("optAcc").checked=store.acc;
+}
+function toggleIn(arr,x){ const i=arr.indexOf(x); if(i>=0) arr.splice(i,1); else arr.push(x); }
+document.querySelectorAll("[data-all]").forEach(b=>b.addEventListener("click",()=>{
+  if(b.dataset.all==="pVerbs") store.pv=VERBS.filter(v=>!v.extra||store.extra).map(v=>v.inf); else store.pt=TENSES.map(t=>t.id); save(); renderSetup();
+}));
+document.querySelectorAll("[data-none]").forEach(b=>b.addEventListener("click",()=>{
+  if(b.dataset.none==="pVerbs") store.pv=[]; else store.pt=[]; save(); renderSetup();
+}));
+$("optVos").addEventListener("change",e=>{store.vos=e.target.checked;save();});
+$("optAcc").addEventListener("change",e=>{store.acc=e.target.checked;save();});
+$("extraBtn").addEventListener("click",()=>{
+  const ex=VERBS.filter(v=>v.extra).map(v=>v.inf);
+  store.extra=!store.extra;
+  if(store.extra) ex.forEach(x=>{ if(!store.pv.includes(x)) store.pv.push(x); });
+  else store.pv=store.pv.filter(x=>!ex.includes(x));
+  save(); renderSetup();
+});
+$("startBtn").addEventListener("click",startQuiz);
+$("backSetup").addEventListener("click",()=>{ $("quiz").classList.add("hidden"); $("setup").classList.remove("hidden"); syncHero(); });
+
+// ---- quiz ----
+let q=null, answered=false, streak=0, right=0, total=0;
+const ACC=["á","é","í","ó","ú","ñ"];
+$("accentBar").innerHTML=ACC.map(a=>"<button type='button' data-a='"+a+"'>"+a+"</button>").join("");
+$("accentBar").addEventListener("click",e=>{
+  const a=e.target.dataset && e.target.dataset.a; if(!a) return;
+  const inp=$("qInput"); const s=inp.selectionStart??inp.value.length, en=inp.selectionEnd??inp.value.length;
+  inp.value=inp.value.slice(0,s)+a+inp.value.slice(en); inp.focus(); inp.setSelectionRange(s+1,s+1);
+});
+function key(v,t,p){return v+"|"+t+"|"+p}
+function startQuiz(){
+  if(!store.pv.length||!store.pt.length){ $("setupErr").classList.remove("hidden"); return; }
+  $("setupErr").classList.add("hidden");
+  $("setup").classList.add("hidden"); $("quiz").classList.remove("hidden"); syncHero(); window.scrollTo({top:0});
+  streak=0; right=0; total=0; updateStats(); nextQ();
+}
+function pool(){
+  const items=[];
+  store.pv.filter(vi=>{ const v=VERBS.find(x=>x.inf===vi); return v && (store.extra||!v.extra); }).forEach(vi=>store.pt.forEach(ti=>{ for(let p=0;p<6;p++){ if(p===4&&!store.vos) continue; items.push({v:vi,t:ti,p}); } }));
+  return items;
+}
+function nextQ(){
+  const items=pool();
+  const weights=items.map(it=>{ const s=store.m[key(it.v,it.t,it.p)]||0; return 4-Math.min(s,3); });
+  let r=Math.random()*weights.reduce((a,b)=>a+b,0), pick=items[0];
+  for(let i=0;i<items.length;i++){ r-=weights[i]; if(r<=0){pick=items[i];break;} }
+  if(q && items.length>1 && pick.v===q.v && pick.t===q.t && pick.p===q.p){ return nextQ(); }
+  q=pick; answered=false;
+  const v=VERBS.find(x=>x.inf===q.v), t=TENSES.find(x=>x.id===q.t);
+  q.answer=v[q.t][q.p]; q.verb=v; q.tense=t;
+  $("qMeta").textContent=t.name+" ("+t.es+") — "+t.use;
+  $("qPrompt").innerHTML="<span class='pron'>"+esc(PRON_SHORT[q.p])+"</span> + "+esc(v.inf);
+  const inp=$("qInput"); inp.value=""; inp.className="answer"; inp.readOnly=false;
+  $("qFeedback").className="feedback"; $("qFeedback").innerHTML="";
+  $("checkBtn").textContent="Check"; $("hintBtn").classList.remove("hidden");
+  const card=$("qCard"); card.classList.remove("pop"); void card.offsetWidth; card.classList.add("pop");
+  inp.focus({preventScroll:true});
+}
+const strip=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").normalize("NFC");
+function check(){
+  if(answered){ nextQ(); return; }
+  const given=$("qInput").value.trim().toLowerCase().replace(/\s+/g," ");
+  if(!given){ $("qInput").focus(); return; }
+  let valid=[q.answer];
+  if(q.verb.inf==="haber"&&q.tense.id==="pres"&&q.p===2) valid.push("hay");
+  const exact=valid.includes(given);
+  const loose=!exact && valid.some(a=>strip(a)===strip(given));
+  const ok = exact || (loose && !store.acc);
+  answered=true; total++;
+  const k=key(q.v,q.tense.id,q.p);
+  const fb=$("qFeedback"), inp=$("qInput"); inp.readOnly=true;
+  const reg=regular(q.verb,q.tense.id)[q.p];
+  if(ok){
+    right++; streak++; store.m[k]=Math.min((store.m[k]||0)+1,3);
+    inp.className="answer ok"; fb.className="feedback show ok";
+    fb.innerHTML="<div class='big'>Correct</div>"+(loose?"<p>Watch the accent: <b>"+esc(q.answer)+"</b>.</p>":"");
+  } else {
+    streak=0; store.m[k]=0;
+    inp.className="answer bad"; fb.className="feedback show bad";
+    fb.innerHTML="<div class='big'>"+highlight(q.answer,reg)+"</div>"+
+      (loose?"<p>Right letters, missing accent. Accents change meaning, so they count here.</p>":"<p>You wrote “"+esc(given)+"”.</p>")+
+      "<p>"+esc(q.verb.notes[q.tense.id])+"</p>";
+  }
+  save(); updateStats();
+  $("checkBtn").textContent="Next"; $("hintBtn").classList.add("hidden");
+}
+$("checkBtn").addEventListener("click",check);
+// keep the keyboard open: tapping Check or an accent doesn’t steal focus from the input
+["pointerdown","mousedown"].forEach(ev=>{
+  $("checkBtn").addEventListener(ev,e=>{ if(document.activeElement===$("qInput")) e.preventDefault(); });
+  $("accentBar").addEventListener(ev,e=>e.preventDefault());
+});
+$("qInput").addEventListener("focus",()=>setTimeout(()=>{ const r=$("qCard").getBoundingClientRect(); if(r.top<0||r.top>140) $("qCard").scrollIntoView({block:"start",behavior:"smooth"}); },250));
+$("qInput").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); check(); } });
+document.addEventListener("keydown",e=>{ if(e.key==="Enter" && answered && document.activeElement!==$("qInput") && !$("quiz").classList.contains("hidden") && document.activeElement!==$("checkBtn")){ nextQ(); } });
+$("hintBtn").addEventListener("click",()=>{
+  const fb=$("qFeedback"); fb.className="feedback show";
+  fb.style.background="var(--saffron-soft)";
+  fb.innerHTML="<p>"+esc(q.verb.notes[q.tense.id])+"</p><p>"+esc(q.tense.trick)+"</p>";
+  $("qInput").focus({preventScroll:true});
+});
+function updateStats(){ $("sStreak").textContent=streak; $("sScore").textContent=right+"/"+total; }
+// clear inline hint background when feedback resets
+new MutationObserver(()=>{ const fb=$("qFeedback"); if(!fb.classList.contains("show")||fb.classList.contains("ok")||fb.classList.contains("bad")) fb.style.background=""; }).observe($("qFeedback"),{attributes:true,attributeFilter:["class"]});
+
+// ---- mastery ----
+function cellScore(v,t){
+  let sum=0,n=0; for(let p=0;p<6;p++){ if(p===4&&!store.vos) continue; sum+=Math.min(store.m[key(v,t,p)]||0,3); n+=3; }
+  return sum/n;
+}
+function renderMastery(){
+  const short={pres:"Pres.",pret:"Pret.",imp:"Imperf.",fut:"Fut.",cond:"Cond.",subj:"Subj.",impsubj:"Imp. subj."};
+  let h="<tr><th></th>"+TENSES.map(t=>"<th>"+short[t.id]+"</th>").join("")+"</tr>";
+  VERBS.filter(v=>!v.extra||store.extra).forEach(v=>{
+    h+="<tr><th class='v'>"+v.inf+"</th>"+TENSES.map(t=>{
+      const s=cellScore(v.inf,t.id), pct=Math.round(s*100);
+      const bg = s===0 ? "var(--tile)" : "color-mix(in srgb, var(--ok) "+Math.round(20+s*70)+"%, var(--tile))";
+      return "<td style='background:"+bg+"' data-v='"+v.inf+"' data-t='"+t.id+"' title='"+v.inf+", "+t.name+": "+pct+"%'>"+(pct?pct+"%":"")+"</td>";
+    }).join("")+"</tr>";
+  });
+  $("mTable").innerHTML=h;
+}
+$("mTable").addEventListener("click",e=>{
+  const td=e.target.closest("td"); if(!td) return;
+  store.pv=[td.dataset.v]; store.pt=[td.dataset.t]; save(); renderSetup(); showTab("practice"); startQuiz();
+});
+$("resetBtn").addEventListener("click",()=>{ if(confirm("Clear all your progress?")){ store.m={}; save(); renderMastery(); } });
+
+renderLearn(); renderSetup();
+window.__VERBS=VERBS;
+})();
+</script>
+</body>
+</html>
