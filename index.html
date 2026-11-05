@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Spanish Lessons</title>
+<meta name="description" content="Three small, offline-friendly utilities for drilling Spanish verb tenses and endings.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F6FB; --surface:#FFFFFF; --tile:#E9EFFA; --ink:#14213D; --muted:#56658A;
+  --cobalt:#2348A8; --cobalt-soft:#D6E0F7; --saffron:#F2B233; --saffron-soft:#FCEBC4; --line:#CBD6EC;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1530; --surface:#16204A; --tile:#1D2A5C; --ink:#E8EEFA; --muted:#A3B1D6;
+    --cobalt:#89A8FF; --cobalt-soft:#25356F; --saffron:#F5C04E; --saffron-soft:#4A3A12; --line:#2D3B72;
+    color-scheme:dark;
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--cobalt)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:40px;display:flex;flex-direction:column;gap:28px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,8vw,4rem);line-height:.95;letter-spacing:-.02em;margin:0 0 12px;text-wrap:balance}
+h1 span{display:inline-block;background:var(--cobalt);color:var(--bg);padding:0 .15em;border-radius:6px;transform:rotate(-2deg)}
+.lede{color:var(--muted);margin:0;max-width:62ch;font-size:1.1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.tile{display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:16px;background:var(--surface);
+  border:2px solid var(--line);color:var(--ink);text-decoration:none;
+  transition:transform .15s,border-color .15s,box-shadow .15s}
+.tile:hover{transform:translateY(-3px);border-color:var(--cobalt);box-shadow:0 8px 0 var(--cobalt-soft)}
+.tile:focus-visible,.links a:focus-visible{outline:3px solid var(--saffron);outline-offset:3px}
+.glyph{width:56px;height:56px;border-radius:12px;background:var(--cobalt);color:var(--bg);display:grid;place-items:center;
+  font:800 1.5rem var(--display);transform:rotate(-3deg)}
+.tile:nth-child(2) .glyph{background:var(--saffron);color:#14213D;transform:rotate(2deg)}
+.tile:nth-child(3) .glyph{background:var(--ink);transform:rotate(-1deg)}
+.tile h2{font:800 1.4rem/1.1 var(--display);margin:4px 0 0}
+.tile p{margin:0;color:var(--muted)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:6px}
+.tags li{list-style:none;font:700 .8rem var(--body);padding:3px 10px;border-radius:999px;background:var(--tile);color:var(--muted)}
+.tags{padding-left:0;margin-bottom:0}
+.open{font:700 .95rem var(--body);color:var(--cobalt)}
+.about{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.about h2{font:800 1.1rem var(--display);margin:0}
+.about p{margin:0;color:var(--muted);max-width:75ch}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.links a{font:700 .9rem var(--body);padding:8px 14px;border-radius:12px;border:2px solid var(--ink);color:var(--ink);text-decoration:none}
+.links a:hover{background:var(--ink);color:var(--bg)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Spanish <span>lessons</span></h1>
+    <p class="lede">Three small drills for the trouble spots of Spanish verbs: tense recognition, regular endings, and the verbs you use most. Everything runs in your browser, with nothing to install.</p>
+  </header>
+
+  <nav class="grid" aria-label="Utilities">
+    <a class="tile" href="que-tiempo-es.html">
+      <div class="glyph" aria-hidden="true">¿?</div>
+      <h2>¿Qué tiempo es?</h2>
+      <p>Spot the tense, then conjugate. 400 example sentences, ten at a time, with clue words and a rule for each tense.</p>
+      <ul class="tags"><li>Tense recognition</li><li>Conjugation</li><li>Quiz</li></ul>
+      <span class="open">Open →</span>
+    </a>
+    <a class="tile" href="Prueba-de-terminaciones-y-verbos.html">
+      <div class="glyph" aria-hidden="true">-aba</div>
+      <h2>Prueba de terminaciones y verbos</h2>
+      <p>Type the regular endings, or switch to full conjugations of 30 common verbs, one verb or a mixed set. Check, fix and repeat.</p>
+      <ul class="tags"><li>Endings</li><li>30 verbs</li><li>Fill-in</li></ul>
+      <span class="open">Open →</span>
+    </a>
+    <a class="tile" href="Los-quince-verbos.html">
+      <div class="glyph" aria-hidden="true">15</div>
+      <h2>Los quince verbos</h2>
+      <p>Fifteen high-value verbs across the seven simple tenses. Study a table, then drill it until the grid turns green.</p>
+      <ul class="tags"><li>Irregular verbs</li><li>Seven tenses</li><li>Progress grid</li></ul>
+      <span class="open">Open →</span>
+    </a>
+  </nav>
+
+  <section class="about" aria-labelledby="about-h">
+    <h2 id="about-h">About &amp; source</h2>
+    <p>Spanish Lessons is created and maintained by <a href="https://github.com/AndreSpanish">AndreSpanish</a>. The source is on <a href="https://github.com/AndreSpanish/Spanish-Lessons">GitHub</a> and the lessons are hosted at <a href="https://andrespanish.github.io/Spanish-Lessons/">andrespanish.github.io/Spanish-Lessons</a>.</p>
+    <div class="links">
+      <a href="https://github.com/AndreSpanish/Spanish-Lessons">Source on GitHub</a>
+      <a href="https://github.com/AndreSpanish">Author: AndreSpanish</a>
+      <a href="https://andrespanish.github.io/Spanish-Lessons/">Live site</a>
+    </div>
+  </section>
+</main>
+</body>
+</html>
