@@ -1,0 +1,449 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Prueba de terminaciones y verbos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F6FB; --surface:#FFFFFF; --tile:#E9EFFA; --ink:#14213D; --muted:#56658A;
+  --cobalt:#2348A8; --cobalt-soft:#D6E0F7; --saffron:#F2B233; --saffron-soft:#FCEBC4;
+  --ok:#23845A; --ok-soft:#D7F0E3; --bad:#C2412D; --bad-soft:#F8DDD7; --line:#CBD6EC;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+  color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1530; --surface:#16204A; --tile:#1D2A5C; --ink:#E8EEFA; --muted:#A3B1D6;
+    --cobalt:#89A8FF; --cobalt-soft:#25356F; --saffron:#F5C04E; --saffron-soft:#4A3A12;
+    --ok:#5FD39A; --ok-soft:#16402F; --bad:#FF8A73; --bad-soft:#4A1F18; --line:#2D3B72;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1530; --surface:#16204A; --tile:#1D2A5C; --ink:#E8EEFA; --muted:#A3B1D6;
+  --cobalt:#89A8FF; --cobalt-soft:#25356F; --saffron:#F5C04E; --saffron-soft:#4A3A12;
+  --ok:#5FD39A; --ok-soft:#16402F; --bad:#FF8A73; --bad-soft:#4A1F18; --line:#2D3B72;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:24px 40px;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.1rem,7vw,3.2rem);line-height:.95;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 span{display:inline-block;background:var(--cobalt);color:var(--bg);padding:0 .15em;border-radius:6px;transform:rotate(-2deg)}
+.lede{color:var(--muted);margin:0;max-width:62ch}
+.btn{font:700 .95rem var(--body);padding:10px 16px;border-radius:12px;border:2px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.soft{border-color:var(--line);background:var(--surface);color:var(--ink)}
+.btn.soft[aria-expanded="true"]{border-color:var(--cobalt);background:var(--cobalt-soft)}
+.picker{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.picker select{flex:1 1 240px;min-width:0;font:700 1rem var(--body);padding:10px 12px;border-radius:12px;border:2px solid var(--ink);background:var(--surface);color:var(--ink)}
+.icon{font-size:1.15rem;padding:8px 12px}
+.panel{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:14px}
+.panel h3{font:800 1rem var(--display);margin:0 0 6px}
+.group{display:flex;flex-direction:column;gap:4px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px 16px}
+.toggle{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.95rem}
+.toggle input{width:18px;height:18px;accent-color:var(--cobalt);flex:none}
+.toggle small{color:var(--muted)}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:999px;overflow:hidden;align-self:flex-start}
+.seg button{font:700 .9rem var(--body);padding:8px 14px;border:0;background:var(--surface);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--cobalt);color:var(--bg)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:700 .82rem var(--body);padding:6px 10px;border-radius:8px;border:2px solid var(--line);background:var(--tile);color:var(--ink);cursor:pointer}
+.panel-split{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px 24px}
+.prog-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto}
+.prow{display:grid;grid-template-columns:92px 1fr 64px;gap:10px;align-items:center;font-size:.92rem;background:none;border:0;padding:2px 0;color:var(--ink);text-align:left;cursor:pointer;font-family:var(--body)}
+.prow b{font-family:var(--display)}
+.track{height:10px;border-radius:99px;background:var(--tile);overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px;background:var(--ok)}
+.track i.mid{background:var(--saffron)}
+.track i.low{background:var(--bad)}
+.prow span{color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.note{color:var(--muted);font-size:.9rem;margin:0}
+.linkbtn{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;font:inherit;font-size:.85rem;cursor:pointer;align-self:flex-start}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.accents{display:flex;gap:4px}
+.accents button{font:700 1.1rem var(--display);width:38px;height:42px;border-radius:10px;border:2px solid var(--line);background:var(--tile);color:var(--ink);cursor:pointer}
+.score{margin-left:auto;font:700 1rem var(--body);color:var(--muted)}
+.score b{font:800 1.3rem var(--display);color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+.table-wrap{overflow-x:auto;border-radius:14px;background:var(--cobalt);padding:6px}
+table{border-collapse:separate;border-spacing:4px;width:100%}
+th,td{border-radius:8px;text-align:center;padding:6px}
+thead th{background:var(--surface);font-weight:400;vertical-align:top}
+thead th.tense{font:800 1.05rem/1.1 var(--display)}
+thead th.tense small,.card h4 small{display:block;font:400 .78rem/1.3 var(--body);color:var(--muted);margin-top:3px}
+thead tr.types th{font:700 .82rem var(--body);color:var(--muted);background:var(--tile)}
+.corner{background:transparent!important}
+tbody th{background:var(--surface);text-align:left;font:700 .95rem var(--body);white-space:nowrap;position:sticky;left:0;z-index:1}
+tbody th em,.card label em{font-style:normal;color:var(--cobalt)}
+tbody td{background:var(--tile);padding:4px}
+td.now,.card.now{background:var(--saffron-soft)}
+.cell{width:100%;min-width:0;font:700 1.05rem var(--display);text-align:center;padding:8px 4px;border-radius:6px;border:2px solid var(--line);background:var(--surface);color:var(--ink)}
+.cell.ok{border-color:var(--ok);background:var(--ok-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.acc{border-color:var(--saffron);background:var(--saffron-soft)}
+.cell.given{border-style:dashed;color:var(--muted);background:transparent}
+.dash{display:block;color:var(--muted);font:700 1.05rem var(--display);padding:8px 0}
+.fix{display:block;font:700 .8rem var(--body);color:var(--bad);margin-top:2px}
+.fix:empty{display:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.card{background:var(--tile);border:2px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.card h4{margin:0 0 2px;font:800 1rem/1.1 var(--display)}
+.card h4 .sub{font:700 .82rem var(--body);color:var(--cobalt)}
+.card label{font:700 .8rem var(--body);color:var(--muted);display:block;margin-bottom:2px}
+.msg{margin:0;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.msg b{font-family:var(--display)}
+.foot{color:var(--muted);font-size:.85rem;margin:0}
+</style></head><body>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <h1>Prueba de <span>terminaciones</span></h1>
+    <p class="lede" id="lede"></p>
+  </header>
+
+  <div class="picker">
+    <select id="verbSel" aria-label="What to practice"></select>
+    <button class="btn soft icon" id="randBtn" type="button" title="Random verb" aria-label="Random verb">🎲</button>
+    <button class="btn soft" id="optBtn" type="button" aria-expanded="false" aria-controls="optPanel">Options</button>
+    <button class="btn soft" id="progBtn" type="button" aria-expanded="false" aria-controls="progPanel">Progress</button>
+  </div>
+
+  <section class="panel" id="optPanel" hidden></section>
+  <section class="panel" id="progPanel" hidden></section>
+
+  <div class="bar">
+    <button class="btn" id="checkBtn" type="button">Check</button>
+    <div class="accents" id="accentBar" aria-label="Accent letters"></div>
+    <button class="btn ghost" id="showBtn" type="button">Show</button>
+    <button class="btn ghost" id="newBtn" type="button">Start over</button>
+    <span class="score" id="score"></span>
+  </div>
+
+  <p class="msg" id="msg" hidden></p>
+  <div id="grid"></div>
+  <p class="foot" id="foot"></p>
+</div>
+
+<script>
+(function(){
+"use strict";
+const VERBS=[{"i": "ser", "e": "to be (what something is)", "g": 1, "pr": "soy eres es somos sois son", "pt": "fui fuiste fue fuimos fuisteis fueron", "fs": "ser", "sj": "sea seas sea seamos seáis sean", "pp": "sido", "gd": "siendo", "im": "era eras era éramos erais eran"}, {"i": "estar", "e": "to be (how and where)", "g": 1, "pr": "estoy estás está estamos estáis están", "pt": "estuve estuviste estuvo estuvimos estuvisteis estuvieron", "fs": "estar", "sj": "esté estés esté estemos estéis estén", "pp": "estado", "gd": "estando"}, {"i": "tener", "e": "to have", "g": 1, "pr": "tengo tienes tiene tenemos tenéis tienen", "pt": "tuve tuviste tuvo tuvimos tuvisteis tuvieron", "fs": "tendr", "sj": "tenga tengas tenga tengamos tengáis tengan", "pp": "tenido", "gd": "teniendo"}, {"i": "haber", "e": "to have (done) · there is", "g": 1, "pr": "he has ha hemos habéis han", "pt": "hube hubiste hubo hubimos hubisteis hubieron", "fs": "habr", "sj": "haya hayas haya hayamos hayáis hayan", "pp": "habido", "gd": "habiendo"}, {"i": "hacer", "e": "to do, to make", "g": 1, "pr": "hago haces hace hacemos hacéis hacen", "pt": "hice hiciste hizo hicimos hicisteis hicieron", "fs": "har", "sj": "haga hagas haga hagamos hagáis hagan", "pp": "hecho", "gd": "haciendo"}, {"i": "ir", "e": "to go", "g": 1, "pr": "voy vas va vamos vais van", "pt": "fui fuiste fue fuimos fuisteis fueron", "fs": "ir", "sj": "vaya vayas vaya vayamos vayáis vayan", "pp": "ido", "gd": "yendo", "im": "iba ibas iba íbamos ibais iban"}, {"i": "poder", "e": "to be able to, can", "g": 1, "pr": "puedo puedes puede podemos podéis pueden", "pt": "pude pudiste pudo pudimos pudisteis pudieron", "fs": "podr", "sj": "pueda puedas pueda podamos podáis puedan", "pp": "podido", "gd": "pudiendo"}, {"i": "decir", "e": "to say, to tell", "g": 1, "pr": "digo dices dice decimos decís dicen", "pt": "dije dijiste dijo dijimos dijisteis dijeron", "fs": "dir", "sj": "diga digas diga digamos digáis digan", "pp": "dicho", "gd": "diciendo"}, {"i": "querer", "e": "to want, to love", "g": 1, "pr": "quiero quieres quiere queremos queréis quieren", "pt": "quise quisiste quiso quisimos quisisteis quisieron", "fs": "querr", "sj": "quiera quieras quiera queramos queráis quieran", "pp": "querido", "gd": "queriendo"}, {"i": "saber", "e": "to know (facts, how to)", "g": 1, "pr": "sé sabes sabe sabemos sabéis saben", "pt": "supe supiste supo supimos supisteis supieron", "fs": "sabr", "sj": "sepa sepas sepa sepamos sepáis sepan", "pp": "sabido", "gd": "sabiendo"}, {"i": "venir", "e": "to come", "g": 1, "pr": "vengo vienes viene venimos venís vienen", "pt": "vine viniste vino vinimos vinisteis vinieron", "fs": "vendr", "sj": "venga vengas venga vengamos vengáis vengan", "pp": "venido", "gd": "viniendo"}, {"i": "poner", "e": "to put, to place", "g": 1, "pr": "pongo pones pone ponemos ponéis ponen", "pt": "puse pusiste puso pusimos pusisteis pusieron", "fs": "pondr", "sj": "ponga pongas ponga pongamos pongáis pongan", "pp": "puesto", "gd": "poniendo"}, {"i": "salir", "e": "to leave, to go out", "g": 1, "pr": "salgo sales sale salimos salís salen", "pt": "salí saliste salió salimos salisteis salieron", "fs": "saldr", "sj": "salga salgas salga salgamos salgáis salgan", "pp": "salido", "gd": "saliendo"}, {"i": "dar", "e": "to give", "g": 1, "pr": "doy das da damos dais dan", "pt": "di diste dio dimos disteis dieron", "fs": "dar", "sj": "dé des dé demos deis den", "pp": "dado", "gd": "dando"}, {"i": "ver", "e": "to see, to watch", "g": 1, "pr": "veo ves ve vemos veis ven", "pt": "vi viste vio vimos visteis vieron", "fs": "ver", "sj": "vea veas vea veamos veáis vean", "pp": "visto", "gd": "viendo", "im": "veía veías veía veíamos veíais veían"}, {"i": "llegar", "e": "to arrive, to get (somewhere)", "g": 2, "pr": "llego llegas llega llegamos llegáis llegan", "pt": "llegué llegaste llegó llegamos llegasteis llegaron", "fs": "llegar", "sj": "llegue llegues llegue lleguemos lleguéis lleguen", "pp": "llegado", "gd": "llegando"}, {"i": "pasar", "e": "to pass, to spend (time), to happen", "g": 2, "pr": "paso pasas pasa pasamos pasáis pasan", "pt": "pasé pasaste pasó pasamos pasasteis pasaron", "fs": "pasar", "sj": "pase pases pase pasemos paséis pasen", "pp": "pasado", "gd": "pasando"}, {"i": "deber", "e": "should, must · to owe", "g": 2, "pr": "debo debes debe debemos debéis deben", "pt": "debí debiste debió debimos debisteis debieron", "fs": "deber", "sj": "deba debas deba debamos debáis deban", "pp": "debido", "gd": "debiendo"}, {"i": "parecer", "e": "to seem, to look like", "g": 2, "pr": "parezco pareces parece parecemos parecéis parecen", "pt": "parecí pareciste pareció parecimos parecisteis parecieron", "fs": "parecer", "sj": "parezca parezcas parezca parezcamos parezcáis parezcan", "pp": "parecido", "gd": "pareciendo"}, {"i": "quedar", "e": "to stay, to be left, to fit, to agree to meet", "g": 2, "pr": "quedo quedas queda quedamos quedáis quedan", "pt": "quedé quedaste quedó quedamos quedasteis quedaron", "fs": "quedar", "sj": "quede quedes quede quedemos quedéis queden", "pp": "quedado", "gd": "quedando"}, {"i": "creer", "e": "to believe, to think", "g": 2, "pr": "creo crees cree creemos creéis creen", "pt": "creí creíste creyó creímos creísteis creyeron", "fs": "creer", "sj": "crea creas crea creamos creáis crean", "pp": "creído", "gd": "creyendo"}, {"i": "hablar", "e": "to speak, to talk", "g": 2, "pr": "hablo hablas habla hablamos habláis hablan", "pt": "hablé hablaste habló hablamos hablasteis hablaron", "fs": "hablar", "sj": "hable hables hable hablemos habléis hablen", "pp": "hablado", "gd": "hablando"}, {"i": "llevar", "e": "to carry, to take, to wear", "g": 2, "pr": "llevo llevas lleva llevamos lleváis llevan", "pt": "llevé llevaste llevó llevamos llevasteis llevaron", "fs": "llevar", "sj": "lleve lleves lleve llevemos llevéis lleven", "pp": "llevado", "gd": "llevando"}, {"i": "dejar", "e": "to leave (something), to let · dejar de = to stop", "g": 2, "pr": "dejo dejas deja dejamos dejáis dejan", "pt": "dejé dejaste dejó dejamos dejasteis dejaron", "fs": "dejar", "sj": "deje dejes deje dejemos dejéis dejen", "pp": "dejado", "gd": "dejando"}, {"i": "seguir", "e": "to follow, to continue, to keep (doing)", "g": 2, "pr": "sigo sigues sigue seguimos seguís siguen", "pt": "seguí seguiste siguió seguimos seguisteis siguieron", "fs": "seguir", "sj": "siga sigas siga sigamos sigáis sigan", "pp": "seguido", "gd": "siguiendo"}, {"i": "encontrar", "e": "to find", "g": 2, "pr": "encuentro encuentras encuentra encontramos encontráis encuentran", "pt": "encontré encontraste encontró encontramos encontrasteis encontraron", "fs": "encontrar", "sj": "encuentre encuentres encuentre encontremos encontréis encuentren", "pp": "encontrado", "gd": "encontrando"}, {"i": "llamar", "e": "to call · llamarse = to be named", "g": 2, "pr": "llamo llamas llama llamamos llamáis llaman", "pt": "llamé llamaste llamó llamamos llamasteis llamaron", "fs": "llamar", "sj": "llame llames llame llamemos llaméis llamen", "pp": "llamado", "gd": "llamando"}, {"i": "pensar", "e": "to think · pensar + infinitive = to plan to", "g": 2, "pr": "pienso piensas piensa pensamos pensáis piensan", "pt": "pensé pensaste pensó pensamos pensasteis pensaron", "fs": "pensar", "sj": "piense pienses piense pensemos penséis piensen", "pp": "pensado", "gd": "pensando"}, {"i": "volver", "e": "to return, to come back · volver a = to do again", "g": 2, "pr": "vuelvo vuelves vuelve volvemos volvéis vuelven", "pt": "volví volviste volvió volvimos volvisteis volvieron", "fs": "volver", "sj": "vuelva vuelvas vuelva volvamos volváis vuelvan", "pp": "vuelto", "gd": "volviendo"}, {"i": "tomar", "e": "to take, to drink", "g": 2, "pr": "tomo tomas toma tomamos tomáis toman", "pt": "tomé tomaste tomó tomamos tomasteis tomaron", "fs": "tomar", "sj": "tome tomes tome tomemos toméis tomen", "pp": "tomado", "gd": "tomando"}];
+const ALLP=["yo","tú","él / ella / usted","nosotros","vosotros","ellos / ellas / ustedes"];
+const SHORTP=["yo","tú","él","nosotros","vosotros","ellos"];
+const sp=s=>s.split(" ").map(x=>x==="—"?null:x);
+const TENSES=[
+ {id:"imp",name:"Imperfect",use:"I used to / was doing",core:1,
+  gen:[["-ar","aba abas aba ábamos abais aban"],["-er / -ir","ía ías ía íamos íais ían"]]},
+ {id:"pret",name:"Preterite",use:"I did (finished)",core:1,
+  gen:[["-ar","é aste ó amos asteis aron"],["-er / -ir","í iste ió imos isteis ieron"]]},
+ {id:"pres",name:"Present",use:"I do / am doing",core:1,now:1,
+  gen:[["-ar","o as a amos áis an"],["-er","o es e emos éis en"],["-ir","o es e imos ís en"]]},
+ {id:"fut",name:"Future",use:"on the infinitive",core:1,gen:[["all verbs","é ás á emos éis án"]]},
+ {id:"cond",name:"Conditional",use:"on the infinitive",core:1,gen:[["all verbs","ía ías ía íamos íais ían"]]},
+ {id:"subj",name:"Present subjunctive",use:"that I do (quiero que…)",grp:"more",
+  gen:[["-ar","e es e emos éis en"],["-er / -ir","a as a amos áis an"]]},
+ {id:"impsubj",name:"Imperfect subjunctive",use:"if I did (si yo…)",grp:"more",
+  gen:[["-ar","ara aras ara áramos arais aran"],["-er / -ir","iera ieras iera iéramos ierais ieran"]]},
+ {id:"perf",name:"Present perfect",use:"I have done",grp:"more",
+  gen:[["haber + -ado / -ido","he has ha hemos habéis han"]]},
+ {id:"plup",name:"Past perfect",use:"I had done",grp:"more",
+  gen:[["haber + -ado / -ido","había habías había habíamos habíais habían"]]},
+ {id:"prog",name:"Present progressive",use:"I am doing right now",now:1,grp:"more",
+  gen:[["estar + -ando / -iendo","estoy estás está estamos estáis están"]]},
+ {id:"cmd",name:"Commands",use:"Do it! (tú · usted · ustedes)",grp:"cmd",
+  gen:[["-ar","— a e emos ad en"],["-er","— e a amos ed an"],["-ir","— e a amos id an"]]},
+ {id:"neg",name:"Negative commands",use:"Don’t! (no + …)",grp:"cmd",
+  gen:[["no + -ar","— es e emos éis en"],["no + -er / -ir","— as a amos áis an"]]}
+];
+TENSES.forEach(t=>t.gen=t.gen.map(([l,a])=>[l,sp(a)]));
+const T=Object.fromEntries(TENSES.map(t=>[t.id,t]));
+const CORE=TENSES.filter(t=>t.core).map(t=>t.id);
+const TU_CMD={ser:"sé",tener:"ten",hacer:"haz",ir:"ve",decir:"di",venir:"ven",poner:"pon",salir:"sal"};
+const accentLast=s=>s.replace(/([aeiou])([^aeiou]*)$/,(m,v,r)=>({a:"á",e:"é",i:"í",o:"ó",u:"ú"}[v])+r);
+function forms(v,tid){
+  const inf=v.i, stem=inf.slice(0,-2), ar=inf.endsWith("ar"), sj=sp(v.sj);
+  switch(tid){
+    case "pres": return sp(v.pr);
+    case "pret": return sp(v.pt);
+    case "subj": return sj;
+    case "imp": return v.im?sp(v.im):T.imp.gen[ar?0:1][1].map(e=>stem+e);
+    case "fut": return T.fut.gen[0][1].map(e=>v.fs+e);
+    case "cond": return T.cond.gen[0][1].map(e=>v.fs+e);
+    case "impsubj": { const b=sp(v.pt)[5].slice(0,-3);
+      return ["ra","ras","ra","ramos","rais","ran"].map((e,k)=>(k===3?accentLast(b):b)+e); }
+    case "perf": return T.perf.gen[0][1].map(a=>a+" "+v.pp);
+    case "plup": return T.plup.gen[0][1].map(a=>a+" "+v.pp);
+    case "prog": return T.prog.gen[0][1].map(a=>a+" "+v.gd);
+    case "cmd": if(inf==="haber") return [null,null,null,null,null,null];
+      return [null,TU_CMD[inf]||sp(v.pr)[2],sj[2],inf==="ir"?"vamos":sj[3],inf.slice(0,-1)+"d",sj[5]];
+    case "neg": if(inf==="haber") return [null,null,null,null,null,null];
+      return [null].concat(sj.slice(1).map(x=>"no "+x));
+  }
+}
+const $=id=>document.getElementById(id);
+const strip=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").normalize("NFC");
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+function load(k,d){ try{ const v=localStorage.getItem("ptv-"+k); return v===null?d:JSON.parse(v); }catch(e){ return d; } }
+function save(k,v){ try{ localStorage.setItem("ptv-"+k,JSON.stringify(v)); }catch(e){} }
+
+// ---------- settings ----------
+const S={
+  on: load("tenses",CORE.slice()).filter(id=>T[id]),
+  vos: load("vos",false),
+  half: load("half",false),
+  strict: load("strict",true),
+  pick: load("pick","")
+};
+if(!S.on.length) S.on=CORE.slice();
+if(S.pick&&S.pick!=="mix"&&!VERBS.some(v=>v.i===S.pick)) S.pick="";
+let PROG=load("progress",{});   // {key:{r,t,tenses:{id:[r,t]}}}
+
+// ---------- state ----------
+let COLS=[], ROWS=[], ANS=[], CELL={}, recorded=false, last=null;
+const mq=window.matchMedia("(max-width: 760px)");
+const isCards=()=>mq.matches;
+
+// ---------- picker ----------
+$("verbSel").innerHTML="<option value=''>Endings (-ar / -er / -ir)</option>"+
+  "<option value='mix'>Mixed verbs (one per row)</option>"+
+  [[1,"Los quince verbos"],[2,"Los siguientes quince verbos"]].map(([g,l])=>"<optgroup label='"+l+"'>"+
+    VERBS.filter(v=>v.g===g).map(v=>"<option value='"+v.i+"'>"+v.i+" — "+esc(v.e)+"</option>").join("")+"</optgroup>").join("");
+$("verbSel").value=S.pick;
+function setPick(p){ S.pick=p; $("verbSel").value=p; save("pick",p); build(); }
+$("verbSel").addEventListener("change",e=>setPick(e.target.value));
+$("randBtn").addEventListener("click",()=>{
+  let n; do{ n=VERBS[Math.floor(Math.random()*VERBS.length)].i; }while(n===S.pick);
+  setPick(n);
+});
+
+// ---------- panels ----------
+function toggleP(which){
+  const map={opt:["optBtn","optPanel"],prog:["progBtn","progPanel"]};
+  for(const k in map){
+    const open = k===which && $(map[k][1]).hidden;
+    $(map[k][1]).hidden=!open; $(map[k][0]).setAttribute("aria-expanded",open);
+    if(open&&k==="prog") renderProg();
+  }
+}
+$("optBtn").addEventListener("click",()=>toggleP("opt"));
+$("progBtn").addEventListener("click",()=>toggleP("prog"));
+
+function renderOpts(){
+  const box=t=>"<label class='toggle'><input type='checkbox' data-t='"+t.id+"'"+(S.on.includes(t.id)?" checked":"")+"> "+t.name+" <small>"+t.use+"</small></label>";
+  $("optPanel").innerHTML=
+   "<div class='panel-split'>"+
+    "<div class='group'><h3>Los cinco tiempos</h3>"+TENSES.filter(t=>t.core).map(box).join("")+"</div>"+
+    "<div class='group'><h3>More tenses</h3>"+TENSES.filter(t=>t.grp==="more").map(box).join("")+"</div>"+
+    "<div class='group'><h3>Commands</h3>"+TENSES.filter(t=>t.grp==="cmd").map(box).join("")+
+      "<p class='note'>The yo box stays empty — there’s no command for yourself.</p></div>"+
+   "</div>"+
+   "<div class='chips'><button type='button' data-set='core'>Just the five</button><button type='button' data-set='all'>Everything</button></div>"+
+   "<div class='panel-split'>"+
+    "<div class='group'><h3>How much to fill in</h3><div class='seg' role='group' aria-label='How much to fill in'>"+
+      "<button type='button' data-half='0' aria-pressed='"+!S.half+"'>Every box</button><button type='button' data-half='1' aria-pressed='"+S.half+"'>Half given</button></div></div>"+
+    "<div class='group'><h3>Checking</h3>"+
+      "<label class='toggle'><input type='checkbox' id='oStrict'"+(S.strict?" checked":"")+"> Accents count <small>(ía ≠ ia)</small></label>"+
+      "<label class='toggle'><input type='checkbox' id='oVos'"+(S.vos?" checked":"")+"> Include vosotros <small>(Spain)</small></label></div>"+
+   "</div>";
+  const extra=S.on.filter(id=>!T[id].core).length+(S.vos?1:0)+(S.half?1:0);
+  $("optBtn").textContent="Options"+(extra?" · "+extra+" on":"");
+}
+$("optPanel").addEventListener("change",e=>{
+  const el=e.target;
+  if(el.id==="oStrict"){ S.strict=el.checked; save("strict",S.strict); return; }
+  if(el.id==="oVos"){ S.vos=el.checked; save("vos",S.vos); build(); return; }
+  const id=el.dataset.t; if(!id) return;
+  if(el.checked){ if(!S.on.includes(id)) S.on.push(id); }
+  else { if(S.on.length===1){ el.checked=true; return; } S.on=S.on.filter(x=>x!==id); }
+  S.on.sort((a,b)=>TENSES.indexOf(T[a])-TENSES.indexOf(T[b]));
+  save("tenses",S.on); build();
+});
+$("optPanel").addEventListener("click",e=>{
+  const d=e.target.dataset||{};
+  if(d.set){ S.on=TENSES.filter(t=>d.set==="all"||t.core).map(t=>t.id); save("tenses",S.on); build(); }
+  if(d.half!==undefined){ S.half=d.half==="1"; save("half",S.half); build(); }
+});
+
+// ---------- progress ----------
+function acc(p){ return p&&p.t?p.r/p.t:null; }
+function renderProg(){
+  const keys=Object.keys(PROG).filter(k=>PROG[k].t);
+  if(!keys.length){
+    $("progPanel").innerHTML="<h3 style='margin:0'>Progress</h3><p class='note'>Press Check on anything and your results show up here — which verbs and tenses you know, and which need work. Only your first Check of each table counts.</p>";
+    return;
+  }
+  const lab=k=>k==="_end"?"endings":k;
+  keys.sort((a,b)=>acc(PROG[a])-acc(PROG[b]));
+  const bar=(name,p,data)=>{ const a=Math.round(acc(p)*100);
+    return "<button type='button' class='prow'"+(data?" data-go='"+data+"'":" disabled")+"><b>"+name+"</b><span class='track'><i class='"+(a<60?"low":a<85?"mid":"")+"' style='width:"+a+"%'></i></span><span>"+a+"%</span></button>"; };
+  const tt={};
+  keys.forEach(k=>{ const ts=PROG[k].tenses||{}; for(const id in ts){ tt[id]=tt[id]||{r:0,t:0}; tt[id].r+=ts[id][0]; tt[id].t+=ts[id][1]; } });
+  const tk=Object.keys(tt).filter(id=>T[id]).sort((a,b)=>acc(tt[a])-acc(tt[b]));
+  const weakest=keys.find(k=>k!=="_end");
+  const untried=VERBS.filter(v=>!PROG[v.i]).length;
+  $("progPanel").innerHTML=
+   "<div class='panel-split'>"+
+    "<div class='group'><h3>Verbs <small class='note' style='font-weight:400'>weakest first · tap to practice</small></h3><div class='prog-list'>"+
+      keys.map(k=>bar(lab(k),PROG[k],k==="_end"?"_end":k)).join("")+"</div>"+
+      (untried?"<p class='note'>"+untried+" of the 30 verbs not tried yet.</p>":"")+"</div>"+
+    "<div class='group'><h3>Tenses</h3><div class='prog-list'>"+tk.map(id=>bar(T[id].name,tt[id],null)).join("")+"</div></div>"+
+   "</div>"+
+   "<div class='chips'>"+(weakest?"<button type='button' data-go='"+weakest+"'>Practice my weakest verb ("+weakest+")</button>":"")+
+     "<button type='button' data-go='mix'>Mixed verbs, weak ones more often</button></div>"+
+   "<button type='button' class='linkbtn' id='resetProg'>Reset progress</button>";
+}
+$("progPanel").addEventListener("click",e=>{
+  const b=e.target.closest("[data-go]");
+  if(b){ const g=b.dataset.go; setPick(g==="_end"?"":g); toggleP(null); return; }
+  if(e.target.id==="resetProg"&&confirm("Clear all progress?")){ PROG={}; save("progress",PROG); renderProg(); }
+});
+function pickWeighted(n){
+  const w=VERBS.map(v=>{ const a=acc(PROG[v.i]); return a===null?2:1+(1-a)*4; });
+  const out=[], used=new Set();
+  while(out.length<n){
+    let tot=0; w.forEach((x,i)=>{ if(!used.has(i)) tot+=x; });
+    let r=Math.random()*tot, i=0;
+    for(;i<VERBS.length;i++){ if(used.has(i)) continue; r-=w[i]; if(r<=0) break; }
+    i=Math.min(i,VERBS.length-1); used.add(i); out.push(VERBS[i]);
+  }
+  return out;
+}
+
+// ---------- build ----------
+function build(){
+  renderOpts();
+  const persons=[0,1,2,3,4,5].filter(p=>S.vos||p!==4);
+  const active=TENSES.filter(t=>S.on.includes(t.id));
+  const mix=S.pick==="mix", v=mix?null:VERBS.find(x=>x.i===S.pick);
+  const rowVerbs=mix?pickWeighted(persons.length):persons.map(()=>v);
+  ROWS=persons.map((p,r)=>({p,v:rowVerbs[r]}));
+  COLS=[];
+  active.forEach(t=>{
+    if(mix||v) COLS.push({t,label:null});
+    else t.gen.forEach(([l,a])=>COLS.push({t,label:l,a}));
+  });
+  ANS=ROWS.map(row=>COLS.map(c=>row.v?forms(row.v,c.t.id)[row.p]:c.a[row.p]));
+  CELL={};
+  const keys=[]; ANS.forEach((row,r)=>row.forEach((a,c)=>{ if(a!==null) keys.push(r+"-"+c); }));
+  const given=new Set();
+  if(S.half) keys.slice().sort(()=>Math.random()-.5).slice(0,Math.round(keys.length*.45)).forEach(k=>given.add(k));
+  keys.forEach(k=>CELL[k]={v:given.has(k)?ANS[k.split("-")[0]][k.split("-")[1]]:"",cls:given.has(k)?"given":"",fix:""});
+  recorded=false;
+  const anyCmp=COLS.some(c=>c.label&&c.label.includes("+"));
+  $("lede").textContent = mix ? "Each row has its own verb. Type the full form in every box, then press Check."
+    : v ? "Type every form of "+v.i+" ("+v.e+"), then press Check."
+    : "Type just the ending in each box (aba, not hablaba), then press Check."+(anyCmp?" For haber or estar columns, type the helper verb (he, estoy).":"");
+  $("msg").hidden=true; updateScore(null);
+  render();
+}
+
+function inputHTML(r,c){
+  const k=r+"-"+c, st=CELL[k], col=COLS[c], row=ROWS[r];
+  if(!st) return "<span class='dash' aria-label='none'>—</span>";
+  const lbl=ALLP[row.p]+", "+col.t.name+(col.label?" "+col.label:"")+(row.v&&S.pick==="mix"?", "+row.v.i:"");
+  return "<input class='cell "+st.cls+"' id='c"+k+"' data-r='"+r+"' data-c='"+c+"' value='"+esc(st.v)+"'"+
+    (st.cls==="given"?" readonly tabindex='-1'":"")+" enterkeyhint='next' autocomplete='off' autocapitalize='off' autocorrect='off' spellcheck='false' aria-label='"+esc(lbl)+"'><span class='fix'>"+esc(st.fix)+"</span>";
+}
+function rowLabel(row){ return S.pick==="mix" ? ALLP[row.p]+" · <em>"+row.v.i+"</em>" : ALLP[row.p]; }
+function render(){
+  const g=$("grid"), verbMode=!!S.pick;
+  if(isCards()){
+    g.innerHTML="<div class='cards'>"+COLS.map((col,c)=>
+      "<div class='card"+(col.t.now?" now":"")+"'><h4>"+col.t.name+(col.label?" <span class='sub'>"+col.label+"</span>":"")+"<small>"+col.t.use+"</small></h4>"+
+      ROWS.map((row,r)=>"<div><label for='c"+r+"-"+c+"'>"+(S.pick==="mix"?SHORTP[row.p]+" · <em>"+row.v.i+"</em>":SHORTP[row.p])+"</label>"+inputHTML(r,c)+"</div>").join("")+
+      "</div>").join("")+"</div>";
+    $("foot").textContent=S.vos?"":"Vosotros is off — turn it on in Options.";
+  } else {
+    const active=TENSES.filter(t=>S.on.includes(t.id));
+    let h1="<tr><th class='corner'"+(verbMode?"":" rowspan='2'")+"></th>", h2="<tr class='types'>";
+    active.forEach(t=>{
+      const n=verbMode?1:t.gen.length;
+      h1+="<th class='tense'"+(n>1?" colspan='"+n+"'":"")+">"+t.name+"<small>"+t.use+"</small></th>";
+      if(!verbMode) t.gen.forEach(([l])=>h2+="<th>"+l+"</th>");
+    });
+    g.innerHTML="<div class='table-wrap'><table style='min-width:"+(150+COLS.length*(verbMode?150:86))+"px'><thead>"+h1+"</tr>"+(verbMode?"":h2+"</tr>")+"</thead><tbody>"+
+      ROWS.map((row,r)=>"<tr><th>"+rowLabel(row)+"</th>"+COLS.map((col,c)=>"<td"+(col.t.now?" class='now'":"")+">"+inputHTML(r,c)+"</td>").join("")+"</tr>").join("")+
+      "</tbody></table></div>";
+    $("foot").textContent="Tip: Enter moves down the column."+(S.vos?"":" Vosotros is off — turn it on in Options.");
+  }
+}
+mq.addEventListener("change",render);
+document.addEventListener("input",e=>{ const el=e.target; if(!el.classList||!el.classList.contains("cell")) return; const st=CELL[el.dataset.r+"-"+el.dataset.c]; if(st) st.v=el.value; });
+
+// ---------- check ----------
+const norm=v=>v.trim().toLowerCase().replace(/\s+/g," ").replace(/^no /,"").replace(/^-+/,"");
+function check(){
+  let right=0,total=0,accMiss=0;
+  const tally={};
+  for(const k in CELL){
+    const st=CELL[k]; if(st.cls==="given") continue;
+    const [r,c]=k.split("-").map(Number), a=ANS[r][c], v=norm(st.v), aa=norm(a);
+    const shown=S.pick?a:(a.includes(" ")?a:"-"+a);
+    let ok=false;
+    total++; st.fix="";
+    if(v===aa){ st.cls="ok"; ok=true; }
+    else if(v&&strip(v)===strip(aa)){ accMiss++; if(S.strict){ st.cls="acc"; st.fix=shown; } else { st.cls="ok"; ok=true; } }
+    else { st.cls="bad"; st.fix=shown; }
+    if(ok) right++;
+    const key=ROWS[r].v?ROWS[r].v.i:"_end", tid=COLS[c].t.id;
+    tally[key]=tally[key]||{r:0,t:0,tenses:{}}; tally[key].t++; if(ok) tally[key].r++;
+    const tt=tally[key].tenses[tid]=tally[key].tenses[tid]||[0,0]; tt[1]++; if(ok) tt[0]++;
+  }
+  if(!recorded&&total){
+    for(const key in tally){
+      const p=PROG[key]=PROG[key]||{r:0,t:0,tenses:{}}; p.r+=tally[key].r; p.t+=tally[key].t;
+      for(const id in tally[key].tenses){ const q=p.tenses[id]=p.tenses[id]||[0,0]; q[0]+=tally[key].tenses[id][0]; q[1]+=tally[key].tenses[id][1]; }
+    }
+    save("progress",PROG); recorded=true;
+    if(!$("progPanel").hidden) renderProg();
+  }
+  for(const k in CELL){ const el=$("c"+k); if(!el) continue; el.className="cell "+CELL[k].cls; el.nextElementSibling.textContent=CELL[k].fix; }
+  updateScore(right,total);
+  const m=$("msg"); m.hidden=false;
+  m.innerHTML = right===total ? "<b>¡Perfecto!</b> Every box is right."+(S.pick&&S.pick!=="mix"?" Tap 🎲 for another verb.":" Press Start over to go again.")
+    : "<b>"+right+" of "+total+" right.</b> Red boxes show the answer underneath."+(S.strict&&accMiss?" Yellow means right letters, wrong or missing accent.":"")+" Fix them and press Check again.";
+}
+function updateScore(r,t){ $("score").innerHTML = r===null ? "" : "<b>"+r+"</b> / "+t; }
+function show(){
+  for(const k in CELL){ const st=CELL[k]; if(st.cls==="given") continue; const [r,c]=k.split("-"); st.v=ANS[r][c]; st.cls="ok"; st.fix=""; }
+  recorded=true;  // seeing answers means this round doesn’t count
+  render();
+  $("msg").hidden=false; $("msg").innerHTML="Answers filled in (this round won’t count toward Progress). Read them through, then press <b>Start over</b>.";
+  updateScore(null);
+}
+$("checkBtn").addEventListener("click",check);
+$("showBtn").addEventListener("click",show);
+$("newBtn").addEventListener("click",()=>{ build(); const f=document.querySelector(".cell:not(.given)"); if(f&&!isCards()) f.focus({preventScroll:true}); });
+
+// ---------- accents + Enter ----------
+$("accentBar").innerHTML=["á","é","í","ó","ú"].map(a=>"<button type='button' data-a='"+a+"'>"+a+"</button>").join("");
+document.addEventListener("focusin",e=>{ if(e.target.classList&&e.target.classList.contains("cell")) last=e.target; });
+$("accentBar").addEventListener("pointerdown",e=>e.preventDefault());
+$("accentBar").addEventListener("click",e=>{
+  const a=e.target.dataset&&e.target.dataset.a; if(!a||!last||last.readOnly) return;
+  const s=last.selectionStart??last.value.length,en=last.selectionEnd??last.value.length;
+  last.value=last.value.slice(0,s)+a+last.value.slice(en); CELL[last.dataset.r+"-"+last.dataset.c].v=last.value;
+  last.focus(); last.setSelectionRange(s+1,s+1);
+});
+// order: down each column, then the next column (same as the card order on phones)
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Enter"||!e.target.classList||!e.target.classList.contains("cell")) return;
+  e.preventDefault();
+  let r=+e.target.dataset.r,c=+e.target.dataset.c;
+  const R=ROWS.length,C=COLS.length;
+  for(let i=0;i<R*C;i++){
+    r++; if(r>=R){ r=0; c++; } if(c>=C){ e.target.blur(); check(); return; }
+    const n=$("c"+r+"-"+c); if(n&&!n.readOnly){ n.focus(); n.scrollIntoView({block:"nearest"}); return; }
+  }
+});
+build();
+})();
+</script>
+</body></html>
