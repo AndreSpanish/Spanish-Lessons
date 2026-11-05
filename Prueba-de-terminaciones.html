@@ -1,0 +1,218 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Prueba de terminaciones</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: the Los cinco tiempos ending table, emptied out — type every ending, check, fix, repeat */
+:root{
+  --bg:#F3F6FB; --surface:#FFFFFF; --tile:#E9EFFA; --ink:#14213D; --muted:#56658A;
+  --cobalt:#2348A8; --cobalt-soft:#D6E0F7; --saffron:#F2B233; --saffron-soft:#FCEBC4;
+  --ok:#23845A; --ok-soft:#D7F0E3; --bad:#C2412D; --bad-soft:#F8DDD7; --line:#CBD6EC;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1530; --surface:#16204A; --tile:#1D2A5C; --ink:#E8EEFA; --muted:#A3B1D6;
+    --cobalt:#89A8FF; --cobalt-soft:#25356F; --saffron:#F5C04E; --saffron-soft:#4A3A12;
+    --ok:#5FD39A; --ok-soft:#16402F; --bad:#FF8A73; --bad-soft:#4A1F18; --line:#2D3B72;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1530; --surface:#16204A; --tile:#1D2A5C; --ink:#E8EEFA; --muted:#A3B1D6;
+  --cobalt:#89A8FF; --cobalt-soft:#25356F; --saffron:#F5C04E; --saffron-soft:#4A3A12;
+  --ok:#5FD39A; --ok-soft:#16402F; --bad:#FF8A73; --bad-soft:#4A1F18; --line:#2D3B72;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:24px 40px;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,7vw,3.2rem);line-height:.95;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 span{display:inline-block;background:var(--cobalt);color:var(--bg);padding:0 .15em;border-radius:6px;transform:rotate(-2deg)}
+.lede{color:var(--muted);margin:0;max-width:62ch}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:700 .95rem var(--body);padding:10px 16px;border-radius:12px;border:2px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.accents{display:flex;gap:4px}
+.accents button{font:700 1.1rem var(--display);width:40px;height:42px;border-radius:10px;border:2px solid var(--line);background:var(--tile);color:var(--ink);cursor:pointer}
+.score{margin-left:auto;font:700 1rem var(--body);color:var(--muted)}
+.score b{font:800 1.3rem var(--display);color:var(--ink)}
+.opts{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.seg{display:flex;border:2px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{font:700 .9rem var(--body);padding:8px 14px;border:0;background:var(--surface);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--cobalt);color:var(--bg)}
+.toggle{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.95rem}
+.toggle input{width:18px;height:18px;accent-color:var(--cobalt)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+.table-wrap{overflow-x:auto;border-radius:14px;background:var(--cobalt);padding:6px}
+table{border-collapse:separate;border-spacing:4px;width:100%;min-width:800px}
+th,td{border-radius:8px;text-align:center;padding:6px}
+thead th{background:var(--surface);font-weight:400;vertical-align:top}
+thead th.tense{font:800 1.05rem/1.1 var(--display)}
+thead th.tense small{display:block;font:400 .78rem/1.3 var(--body);color:var(--muted);margin-top:3px}
+thead tr.types th{font:700 .82rem var(--body);color:var(--muted);background:var(--tile)}
+.corner{background:transparent !important}
+tbody th{background:var(--surface);text-align:left;font:700 .95rem var(--body);white-space:nowrap}
+tbody td{background:var(--tile);padding:4px}
+td.now{background:var(--saffron-soft)}
+.cell{width:100%;min-width:0;font:700 1.05rem var(--display);text-align:center;padding:8px 4px;border-radius:6px;border:2px solid var(--line);background:var(--surface);color:var(--ink)}
+.cell.ok{border-color:var(--ok);background:var(--ok-soft)}
+.cell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cell.acc{border-color:var(--saffron);background:var(--saffron-soft)}
+.cell.given{border-style:dashed;color:var(--muted);background:transparent}
+.fix{display:block;font:700 .8rem var(--body);color:var(--bad);margin-top:2px;min-height:0}
+.fix:empty{display:none}
+.msg{margin:0;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.msg[hidden]{display:none}
+.msg b{font-family:var(--display)}
+.foot{color:var(--muted);font-size:.85rem;margin:0}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <h1>Prueba de <span>terminaciones</span></h1>
+    <p class="lede">Fill in the regular ending for every box, then press Check. Type just the ending (aba, not hablaba). The hyphen is optional.</p>
+  </header>
+
+  <div class="opts">
+    <div class="seg" role="group" aria-label="Mode">
+      <button type="button" id="mAll" aria-pressed="true">Full test</button>
+      <button type="button" id="mHalf" aria-pressed="false">Half filled in</button>
+    </div>
+    <label class="toggle"><input type="checkbox" id="optAcc" checked> Accents count (ía ≠ ia)</label>
+  </div>
+
+  <div class="bar">
+    <button class="btn" id="checkBtn" type="button">Check</button>
+    <div class="accents" id="accentBar" aria-label="Accent letters"></div>
+    <button class="btn ghost" id="showBtn" type="button">Show answers</button>
+    <button class="btn ghost" id="newBtn" type="button">Start over</button>
+    <span class="score" id="score"></span>
+  </div>
+
+  <p class="msg" id="msg" hidden></p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="corner" rowspan="2"></th>
+          <th class="tense" colspan="2">Imperfect<small>I used to / was doing</small></th>
+          <th class="tense" colspan="2">Preterite<small>I did (finished)</small></th>
+          <th class="tense" colspan="3">Present<small>I do / am doing</small></th>
+          <th class="tense">Future<small>on the infinitive</small></th>
+          <th class="tense">Conditional<small>on the infinitive</small></th>
+        </tr>
+        <tr class="types">
+          <th>-ar</th><th>-er / -ir</th>
+          <th>-ar</th><th>-er / -ir</th>
+          <th>-ar</th><th>-er</th><th>-ir</th>
+          <th>all verbs</th><th>all verbs</th>
+        </tr>
+      </thead>
+      <tbody id="body"></tbody>
+    </table>
+  </div>
+
+  <p class="foot">Tip: press Enter to jump to the next box down. Vosotros is left out, matching Los cinco tiempos.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+const PERSONS=["yo","tú","él / ella / usted","nosotros","ellos / ellas / ustedes"];
+// columns: imp-ar, imp-er/ir, pret-ar, pret-er/ir, pres-ar, pres-er, pres-ir, fut, cond
+const ANS=[
+  ["aba","ía","é","í","o","o","o","é","ía"],
+  ["abas","ías","aste","iste","as","es","es","ás","ías"],
+  ["aba","ía","ó","ió","a","e","e","á","ía"],
+  ["ábamos","íamos","amos","imos","amos","emos","imos","emos","íamos"],
+  ["aban","ían","aron","ieron","an","en","en","án","ían"]
+];
+const NOW=[4,5,6];
+const $=id=>document.getElementById(id);
+const strip=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").normalize("NFC");
+let mode="all", given=new Set(), last=null;
+
+function build(){
+  given.clear();
+  if(mode==="half"){
+    const all=[]; for(let r=0;r<5;r++) for(let c=0;c<9;c++) all.push(r+"-"+c);
+    all.sort(()=>Math.random()-.5).slice(0,22).forEach(k=>given.add(k));
+  }
+  $("body").innerHTML=ANS.map((row,r)=>"<tr><th>"+PERSONS[r]+"</th>"+row.map((a,c)=>{
+    const k=r+"-"+c, g=given.has(k);
+    return "<td"+(NOW.includes(c)?" class='now'":"")+"><input class='cell"+(g?" given":"")+"' id='c"+k+"' data-r='"+r+"' data-c='"+c+"'"+
+      (g?" value='"+a+"' readonly tabindex='-1'":"")+" autocomplete='off' autocapitalize='off' autocorrect='off' spellcheck='false' aria-label='"+PERSONS[r]+", column "+(c+1)+"'><span class='fix'></span></td>";
+  }).join("")+"</tr>").join("");
+  $("msg").hidden=true; updateScore(null);
+  const first=document.querySelector(".cell:not(.given)"); if(first) first.focus({preventScroll:true});
+}
+function norm(v){ return v.trim().toLowerCase().replace(/^-+/,""); }
+function check(){
+  const strict=$("optAcc").checked;
+  let right=0,total=0,accMiss=0;
+  document.querySelectorAll(".cell").forEach(el=>{
+    if(el.classList.contains("given")) return;
+    const r=+el.dataset.r,c=+el.dataset.c,a=ANS[r][c],v=norm(el.value),fix=el.nextElementSibling;
+    total++; el.classList.remove("ok","bad","acc"); fix.textContent="";
+    if(!v){ el.classList.add("bad"); fix.textContent="-"+a; return; }
+    if(v===a){ el.classList.add("ok"); right++; return; }
+    if(strip(v)===strip(a)){
+      accMiss++;
+      if(strict){ el.classList.add("acc"); fix.textContent="-"+a; }
+      else { el.classList.add("ok"); right++; }
+      return;
+    }
+    el.classList.add("bad"); fix.textContent="-"+a;
+  });
+  updateScore(right,total);
+  const m=$("msg"); m.hidden=false;
+  m.innerHTML = right===total ? "<b>¡Perfecto!</b> Every ending is right. Try Start over to do it again from memory."
+    : "<b>"+right+" of "+total+" right.</b> Red boxes show the correct ending underneath."+(strict&&accMiss?" Yellow boxes have the right letters but a missing or wrong accent.":"")+" Fix them and press Check again.";
+}
+function updateScore(r,t){ $("score").innerHTML = r===null ? "" : "<b>"+r+"</b> / "+t; }
+function show(){
+  document.querySelectorAll(".cell").forEach(el=>{
+    if(el.classList.contains("given")) return;
+    el.value=ANS[el.dataset.r][el.dataset.c]; el.classList.remove("bad","acc"); el.classList.add("ok"); el.nextElementSibling.textContent="";
+  });
+  $("msg").hidden=false; $("msg").innerHTML="Answers filled in. Read through them, then press <b>Start over</b> and try from memory.";
+  updateScore(null);
+}
+$("checkBtn").addEventListener("click",check);
+$("showBtn").addEventListener("click",show);
+$("newBtn").addEventListener("click",build);
+function setMode(m){ mode=m; $("mAll").setAttribute("aria-pressed",m==="all"); $("mHalf").setAttribute("aria-pressed",m==="half"); build(); }
+$("mAll").addEventListener("click",()=>setMode("all"));
+$("mHalf").addEventListener("click",()=>setMode("half"));
+
+// accents insert into the last focused box
+$("accentBar").innerHTML=["á","é","í","ó"].map(a=>"<button type='button' data-a='"+a+"'>"+a+"</button>").join("");
+document.addEventListener("focusin",e=>{ if(e.target.classList&&e.target.classList.contains("cell")) last=e.target; });
+$("accentBar").addEventListener("pointerdown",e=>e.preventDefault());
+$("accentBar").addEventListener("click",e=>{
+  const a=e.target.dataset&&e.target.dataset.a; if(!a||!last||last.readOnly) return;
+  const s=last.selectionStart??last.value.length,en=last.selectionEnd??last.value.length;
+  last.value=last.value.slice(0,s)+a+last.value.slice(en); last.focus(); last.setSelectionRange(s+1,s+1);
+});
+// Enter moves down the column, then to the top of the next column
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Enter"||!e.target.classList||!e.target.classList.contains("cell")) return;
+  e.preventDefault();
+  let r=+e.target.dataset.r,c=+e.target.dataset.c;
+  for(let i=0;i<45;i++){
+    r++; if(r>4){ r=0; c++; } if(c>8){ check(); return; }
+    const n=$("c"+r+"-"+c); if(n&&!n.readOnly){ n.focus(); return; }
+  }
+});
+build();
+})();
+</script>
+
+</body></html>
