@@ -1,0 +1,599 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Spanish Stress Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: course-map rail on the left; main shows the course home, one topic as a study sheet + drill, or the level review test. */
+:root{
+  --bg:#f6f7fb; --paper:#ffffff; --ink:#18213a; --muted:#5b6380; --line:#dfe3ef;
+  --ser:#2b4fc7; --ser-soft:#e7ecfc; --estar:#b4620a; --estar-soft:#fbefdf;
+  --good:#1e7a4c; --good-soft:#e1f3e9; --bad:#b4233a; --bad-soft:#fbe6ea;
+  --mx:#b0005e; --mx-soft:#fce8f2; --es:#8a5a00; --es-soft:#f8eed8; --ar:#0a6e9e; --ar-soft:#e2f1f9;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10131f; --paper:#171b2b; --ink:#e8ebf5; --muted:#9aa2bf; --line:#2a3048;
+  --ser:#8aa4ff; --ser-soft:#1e2647; --estar:#f0a64f; --estar-soft:#3a2a16;
+  --good:#5fd39a; --good-soft:#15301f; --bad:#ff8096; --bad-soft:#3a1820; --mx:#ff86c2; --mx-soft:#36142a; --es:#e8b85a; --es-soft:#33280f; --ar:#6cc3ee; --ar-soft:#0f2a38; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10131f; --paper:#171b2b; --ink:#e8ebf5; --muted:#9aa2bf; --line:#2a3048;
+  --ser:#8aa4ff; --ser-soft:#1e2647; --estar:#f0a64f; --estar-soft:#3a2a16;
+  --good:#5fd39a; --good-soft:#15301f; --bad:#ff8096; --bad-soft:#3a1820; --mx:#ff86c2; --mx-soft:#36142a; --es:#e8b85a; --es-soft:#33280f; --ar:#6cc3ee; --ar-soft:#0f2a38; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.65 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:820px;margin:0 auto;display:grid;gap:28px}
+@media (max-width:860px){.wrap{grid-template-columns:minmax(0,1fr)}.rail{position:static!important;max-height:none!important}}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+p{margin:0}
+a{color:var(--ser)}
+.label{font:500 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ser,.ca{color:var(--ser);font-weight:600}.estar,.cb{color:var(--estar);font-weight:600}
+
+/* rail */
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);align-self:start;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 32px);overflow-y:auto;padding-right:4px}
+.brand{font:800 18px/1.2 var(--display);color:var(--ink);text-decoration:none}
+.lvl summary{cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;list-style:none;font:700 14px var(--display);padding:4px 0}
+.lvl summary::-webkit-details-marker{display:none}
+.lvl ol{list-style:none;margin:4px 0 0;padding:0;font:13px/1.4 var(--display);counter-reset:t}
+.lvl li{counter-increment:t}
+.lvl li a{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:4px;align-items:baseline;padding:4px 8px;border-radius:6px;color:var(--muted);text-decoration:none}
+.lvl li a::before{content:counter(t);font:500 10px var(--mono);opacity:.7}
+.lvl li a:hover{background:var(--paper);color:var(--ink)}
+.lvl li a.on{background:var(--ser-soft);color:var(--ser);font-weight:700}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dot.p{background:var(--estar)}.dot.m{background:var(--good)}
+.soon{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:14px}
+.soon div{display:flex;justify-content:space-between;font:13px var(--display);color:var(--muted)}
+.toc{display:flex;flex-direction:column;gap:2px;font:13px/1.5 var(--display);border-top:1px solid var(--line);padding-top:14px}
+.toc button{all:unset;cursor:pointer;color:var(--muted);padding:2px 8px;border-radius:6px}
+.toc button:hover{color:var(--ink);background:var(--paper)}
+.toc button:focus-visible{outline:3px solid var(--estar)}
+
+/* main */
+main{display:flex;flex-direction:column;gap:48px;min-width:0}
+.hero{display:flex;flex-direction:column;gap:12px}
+.hero h1{font-size:clamp(36px,6.5vw,62px);font-weight:800;letter-spacing:-.02em}
+.hero h1 .vs{font-weight:500;color:var(--muted);font-size:.55em;vertical-align:.2em;margin:0 .15em}
+.hero p{max-width:64ch;font-size:18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:500 12px var(--mono);border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:16px;scroll-margin-top:16px}
+section>h2{font-size:26px}
+section>p{max-width:68ch}
+.split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:640px){.split{grid-template-columns:minmax(0,1fr)}}
+.col{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.col.s,.col.a{border-top:4px solid var(--ser)}.col.e,.col.b{border-top:4px solid var(--estar)}
+.col h3{font-size:22px}
+.col .mnemo{font:500 12px var(--mono);color:var(--muted)}
+.uses{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.uses li{display:grid;gap:3px}
+.uses b{font:700 14px var(--display)}
+.uses .eg{font-style:italic}
+.uses .why{font-size:14px;color:var(--muted);line-height:1.55}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:15px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td:first-child{font:700 15px var(--display)}
+td em{color:var(--muted);font-size:14px}
+.conj{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.conj table{min-width:0}
+.steps{margin:0;padding:0;list-style:none;counter-reset:s;background:var(--paper);border:1px solid var(--line);border-radius:12px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.steps li:last-child{border-bottom:0}
+.steps li::before{content:counter(s);font:800 20px/1.3 var(--display);color:var(--muted)}
+.steps b{font-family:var(--display)}
+.traps{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.traps li{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:4px}
+.traps li strong{font-family:var(--display)}
+.callout{border-left:3px solid var(--line);padding:2px 0 2px 16px;max-width:66ch;color:var(--muted)}
+
+/* home */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.card{display:flex;flex-direction:column;gap:6px;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);text-decoration:none;min-width:0}
+.card:hover{border-color:var(--ser)}
+.card .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card b{font:700 17px/1.25 var(--display)}
+.card span.sum{font-size:14px;color:var(--muted);line-height:1.5}
+.card.review{background:var(--ser-soft);border-color:transparent}
+.card.review b{font-size:20px}
+.pill{font:500 11px var(--mono);padding:2px 8px;border-radius:999px;background:var(--estar-soft);color:var(--estar);white-space:nowrap}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+.progress{display:flex;flex-wrap:wrap;gap:24px;align-items:end}
+.progress .big{font:800 40px/1 var(--display)}
+.meter{flex:1 1 240px;height:8px;border-radius:8px;background:var(--line);overflow:hidden;display:flex}
+.meter i{display:block;height:100%}
+.soon-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.soon-list div{border:1px dashed var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:4px;font-size:14px;color:var(--muted)}
+.soon-list b{font:700 16px var(--display);color:var(--ink)}
+.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:20px}
+.pn a{font:700 15px var(--display);text-decoration:none;display:grid;gap:2px}
+.pn a.next{text-align:right;margin-left:auto}
+
+/* drill */
+.drill{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:18px}
+@media (max-width:480px){.drill{padding:18px}}
+.setup{display:flex;flex-direction:column;gap:18px}
+.field{display:flex;flex-direction:column;gap:8px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px;background:var(--bg);align-self:flex-start;max-width:100%}
+.seg button{font:600 14px var(--display);border:0;background:transparent;color:var(--muted);padding:8px 14px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--paper);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.setup .desc{font-size:14px;color:var(--muted)}
+.bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--ser);transition:width .3s}
+.qmeta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.qtext{font:600 clamp(20px,3.4vw,26px)/1.4 var(--body)}
+.qtext .gap{display:inline-block;min-width:3.2em;border-bottom:2px solid var(--muted);text-align:center}
+.qtext mark{background:var(--bad-soft);color:var(--bad);border-radius:4px;padding:0 4px}
+.opts{display:grid;gap:10px}
+.opt{font:16px var(--body);text-align:left;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--ser)}
+.opt.right{background:var(--good-soft);border-color:var(--good)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.fill{display:flex;gap:10px;flex-wrap:wrap}
+.fill input{flex:1 1 180px;min-width:0;font:18px var(--body);padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.accents{display:flex;gap:6px;flex-wrap:wrap}
+.accents button{font:15px var(--body);width:34px;height:32px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);cursor:pointer}
+button.go{font:700 15px var(--display);padding:11px 20px;border-radius:10px;border:0;background:var(--ser);color:var(--paper);cursor:pointer}
+button.ghost{font:700 15px var(--display);padding:10px 18px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+:focus-visible{outline:3px solid var(--estar);outline-offset:2px}
+.fb{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.fb.ok{background:var(--good-soft)}.fb.no{background:var(--bad-soft)}
+.fb b{font-family:var(--display)}
+.fb.ok b{color:var(--good)}.fb.no b{color:var(--bad)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.score{font:800 56px/1 var(--display)}
+.missed{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.missed i{color:var(--muted)}
+.alt{display:inline-block;font:500 10.5px/1.5 var(--mono);font-style:normal;letter-spacing:.02em;color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:0 6px;margin-left:4px;white-space:nowrap;vertical-align:1px}
+[hidden]{display:none!important}
+.vos-tg{display:flex;gap:10px;align-items:center;cursor:pointer;border-top:1px solid var(--line);padding:14px 8px 0;font:13px/1.35 var(--display)}
+.vos-tg input{position:absolute;opacity:0;width:1px;height:1px}
+.vos-tg small{display:block;color:var(--muted);font-size:12px}
+.vos-tg .sw{flex:0 0 34px;height:20px;border-radius:999px;background:var(--line);position:relative;transition:background .2s}
+.vos-tg .sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--paper);box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .2s}
+.vos-tg input:checked+.sw{background:var(--ser)}
+.vos-tg input:checked+.sw::after{transform:translateX(14px)}
+.vos-tg input:focus-visible+.sw{outline:3px solid var(--estar);outline-offset:2px}
+.r-es{--rg:var(--es);--rg-soft:var(--es-soft)}.r-ar{--rg:var(--ar);--rg-soft:var(--ar-soft)}.r-mx{--rg:var(--mx);--rg-soft:var(--mx-soft)}
+.reg-sw{display:flex;flex-direction:column;gap:6px}
+.reg-sw .seg{display:grid;grid-template-columns:repeat(3,1fr)}
+.reg-sw .seg button{padding:6px 4px;font-size:12.5px}
+.reg-sw .seg button.r-mx[aria-pressed="true"],.reg-sw .seg button.r-es[aria-pressed="true"],.reg-sw .seg button.r-ar[aria-pressed="true"]{background:var(--rg);color:var(--paper);border-color:var(--rg)}
+.reg-sw small{font:12px/1.4 var(--display);color:var(--muted);padding:0 2px}
+.mixes{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line);padding-top:14px}
+.mixes .label{padding:0 8px 4px}
+.rv-link.rg{color:var(--rg)}
+.rv-link.rg:hover,.rv-link.rg.on{background:var(--rg-soft)}
+tr.rg-row td{background:var(--rg-soft);color:var(--rg);font-weight:600}
+.rg-same{color:var(--muted);font-style:italic}
+.ddrill{border-top:1px dashed var(--rg);padding-top:16px;margin-top:4px}
+.rg-sub{font:700 15px var(--display);color:var(--rg)}
+/* verbs */
+a.linkbtn{text-decoration:none;display:inline-block}
+a.go.linkbtn{font:700 15px var(--display);padding:11px 20px;border-radius:10px;background:var(--ser);color:var(--paper)}
+a.ghost.linkbtn{font:700 15px var(--display);padding:10px 18px;border-radius:10px;border:1px solid var(--line);color:var(--ink)}
+.linkish{all:unset;cursor:pointer;color:var(--ser);text-decoration:underline;font-weight:600}
+.vfind{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}.vfind input{flex:1 1 260px;min-width:0;font:16px var(--body);padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+.vfilter{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.vfilter input,.gsearch{font:16px var(--body);padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);max-width:420px}
+.vgrid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.vcard b{font:700 18px var(--display)}
+.vcard .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.vtags{display:flex;flex-wrap:wrap;gap:4px}.vtags span{font:500 10px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 7px}
+.legend{font-size:14px;color:var(--muted)}
+mark{background:none;color:inherit;box-shadow:inset 0 -.42em 0 var(--estar-soft);border-bottom:2px solid var(--estar)}
+.vts{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.vt{border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:14px 14px 12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.vt h3{font:700 16px var(--display)}.vt h3 small{display:block;font:400 12.5px var(--body);color:var(--muted);margin-top:2px}
+table.vtab{min-width:0;font-size:15px}
+.vtab th,.vtab td{padding:5px 8px}
+.vtab tbody th{font:500 11.5px var(--mono);color:var(--muted);width:40%;overflow-wrap:anywhere}
+.vt{overflow:hidden}.vtab td{overflow-wrap:anywhere}
+.vtab td{font:700 16px var(--display)}
+.vtab thead th{font:500 11px var(--mono);color:var(--muted)}
+.vtab tr.boot td{background:var(--estar-soft)}
+.vnote{font-size:14px;color:var(--muted)}
+.vex{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line);padding-top:8px;font-size:14.5px}
+.vex span:first-child{font-weight:600}.vex span:first-child b{color:var(--ser)}.vex span:last-child{color:var(--muted);font-style:italic}
+.vpbody{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+.vpbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.vpbar select{flex:1 1 260px;min-width:0;font:600 15px var(--display);padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+.vpbar.sticky{position:sticky;top:calc(env(safe-area-inset-top,0px));z-index:3;background:var(--bg);padding:8px 0}
+.vpbar .accents{display:flex;gap:4px}
+.vpbar .accents button,.vone .accents button{font:700 15px var(--display);width:34px;height:38px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.vscore{margin-left:auto;font:600 15px var(--display);color:var(--muted)}.vscore b{color:var(--ink);font-size:20px}
+.vpanel{border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.vpanel .group{display:flex;flex-direction:column;gap:4px}
+.vtoggle{display:flex;gap:8px;align-items:center;font:14px var(--display);cursor:pointer}
+.vtoggle input{width:17px;height:17px;accent-color:var(--ser)}
+.vmsg{padding:12px 14px;border-radius:10px;background:var(--paper);border:1px solid var(--line)}
+table.vgrid-t{min-width:0;width:auto}
+.vgrid-t th small{display:block;font:400 11.5px var(--body);color:var(--muted)}
+.vgrid-t thead th{font:700 14px var(--display);min-width:130px}
+.vgrid-t tbody th{font:600 13px var(--display);white-space:nowrap}.vgrid-t em{font-style:normal;color:var(--ser)}
+.vgrid-t td{padding:6px}
+.vcell{width:100%;min-width:0;font:700 16px var(--display);padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);text-align:center}
+.vcell.ok{border-color:var(--good);background:var(--good-soft)}.vcell.bad{border-color:var(--bad);background:var(--bad-soft)}
+.vcell.acc{border-color:var(--estar);background:var(--estar-soft)}.vcell.given{border-style:dashed;color:var(--muted);background:transparent}
+.vfix{display:block;font:600 12.5px var(--display);color:var(--bad);text-align:center}.vfix:empty{display:none}
+.vdash{display:block;text-align:center;color:var(--muted)}
+.vcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.vrow label{font:500 12px var(--mono);color:var(--muted);display:block;margin-bottom:2px}.vrow em{font-style:normal;color:var(--ser)}
+.vsub{font:600 12px var(--display);color:var(--ser)}
+.vpron{color:var(--ser)}
+.vprog{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.vbars{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.vbar{display:grid;grid-template-columns:110px 1fr 46px;gap:10px;align-items:center;font-size:14px;color:var(--ink);text-decoration:none}
+.vbar b{font-family:var(--display)}.vbar span:last-child{color:var(--muted);text-align:right}
+.track{height:9px;border-radius:99px;background:var(--line);overflow:hidden}.track i{display:block;height:100%;background:var(--good)}.track i.mid{background:var(--estar)}.track i.low{background:var(--bad)}
+table.vmast{min-width:520px}.vmast td{text-align:center;font:600 12px var(--display);cursor:pointer;border:2px solid var(--bg)}.vmast th a{color:var(--ink);text-decoration:none;font-family:var(--display)}
+/* glossary */
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin:0}
+.gloss>div{border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:14px}
+.gloss dt{font:700 17px var(--display)}.gloss dd{margin:6px 0 0;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.gloss .eg{font-style:italic;color:var(--muted)}.gloss a{font:600 13px var(--display)}
+.rw-ins{display:block;font:500 13px var(--mono);letter-spacing:.03em;color:var(--ser);margin-top:8px}
+.rail-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.menu-btn{display:none;font:700 14px var(--display);padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.rail-body{display:flex;flex-direction:column;gap:16px}
+@media (max-width:860px){.menu-btn{display:block}.rail-body{display:none}.rail.open .rail-body{display:flex}.rail{gap:12px}}
+.mx-sec{gap:12px}
+.mx-label{font:500 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--rg,var(--mx))}
+.mx-box{background:var(--rg-soft,var(--mx-soft));border-left:4px solid var(--rg,var(--mx));border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:14px;max-width:72ch}
+.mx-note{display:grid;gap:3px}
+.mx-note b{font:700 15px var(--display);color:var(--rg,var(--mx))}
+.mx-tag{font:500 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--rg,var(--mx));background:var(--rg-soft,var(--mx-soft));border-radius:999px;padding:1px 7px;margin-left:4px}
+.rv-link{display:block;font:700 13px var(--display);padding:6px 8px;border-radius:6px;margin-top:4px}
+.rv-link.on,.rv-link:hover{background:var(--ser-soft)}
+.lvl+.lvl{border-top:1px solid var(--line);padding-top:8px}
+.mx-link{font:700 13px var(--display);padding:4px 8px;border-radius:6px;color:var(--rg,var(--mx));text-decoration:none}
+.mx-link:hover,.mx-link.on{background:var(--rg-soft,var(--mx-soft))}
+.card.mx-card{background:var(--rg-soft,var(--mx-soft));border-color:transparent}
+.card.mx-card b{font-size:20px}
+.card.mx-card:hover{border-color:var(--rg,var(--mx))}
+/* calmer home */
+.startcard{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px 24px;gap:12px}
+.startrow{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.startrow>div{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 280px}
+.startrow b{font:800 24px/1.2 var(--display)}.startrow .sum{color:var(--muted);font-size:15px}
+.progress.mini{display:flex;flex-direction:column;gap:6px;align-items:stretch;font-size:14px;color:var(--muted)}
+.progress.mini b{color:var(--ink)}
+.lvsec{border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.lvsec+.lvsec{margin-top:-4px}
+.lvsec>summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:minmax(0,1fr) auto 120px;gap:16px;align-items:center;padding:14px 18px}
+.lvsec>summary::-webkit-details-marker{display:none}
+.lvsec>summary::after{content:"▾";color:var(--muted);grid-column:4;transition:transform .2s}
+.lvsec[open]>summary::after{transform:rotate(180deg)}
+.lvsec>summary .meter{height:6px}
+.lvname{font:500 16px var(--display)}.lvname b{font-weight:800;margin-right:6px}
+.lvmeta{font:500 12px var(--mono);color:var(--muted)}
+.lvsec>.grid{padding:0 18px 18px}
+@media (max-width:560px){.lvsec .card .sum{display:none}.lvsec .card{gap:2px;padding:12px 14px}}
+@media (max-width:560px){.lvsec>summary{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}.lvsec>summary .meter{grid-column:1/-1;grid-row:2}.lvsec>summary::after{grid-column:2;grid-row:1}.lvmeta{display:none}}
+details.more{border-top:1px solid var(--line);padding-top:12px;width:100%;align-self:stretch}
+details.more>summary{cursor:pointer;font:700 15px var(--display);color:var(--ser)}
+details.more[open]>summary{margin-bottom:12px}
+details.more .intro{display:flex;flex-direction:column;gap:10px;max-width:68ch;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.bar span{transition:none}}
+
+.pairs{display:grid;gap:12px}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.pw{display:grid;gap:4px;min-width:0}
+.pwtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sword{font:700 22px/1.2 var(--display);letter-spacing:.01em}
+.sy{color:var(--muted);font-weight:500}.sy.on{color:var(--ser);font-weight:800;background:var(--ser-soft);border-radius:4px;padding:0 2px}
+.sdot{color:var(--muted);padding:0 2px;opacity:.6}
+.pm{color:var(--ink);font-size:15px}.px{color:var(--muted);font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sbtns{display:inline-flex;gap:4px}
+.sbtn{font:600 13px var(--display);border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:4px 10px;min-height:32px;cursor:pointer}
+.sbtn:hover{border-color:var(--ser)}
+.sq{display:grid;gap:14px;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--paper);max-width:640px}
+.sqtop{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.sprompt{margin:0;font-size:17px}
+.sylrow{display:flex;gap:8px;flex-wrap:wrap}
+.sylb{font:700 clamp(22px,5vw,30px)/1 var(--display);padding:14px 18px;min-width:64px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.sylb:hover:not(:disabled){border-color:var(--ser)}
+.sylb.right{border-color:var(--good,#2e7d4f);background:color-mix(in srgb,var(--good,#2e7d4f) 14%,var(--bg))}
+.sylb.wrong{border-color:var(--bad,#b3261e);background:color-mix(in srgb,var(--bad,#b3261e) 12%,var(--bg))}
+.sfb{display:block;padding:12px 14px;border-radius:10px;background:var(--bg);border-left:4px solid var(--line)}
+.sfb.ok{border-left-color:var(--good,#2e7d4f)}.sfb.no{border-left-color:var(--estar)}
+.sfb p{margin:6px 0 0}
+.pairhint{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pchip{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:3px 4px 3px 12px}
+.pchip em{color:var(--muted);font-style:normal;font-size:13px}
+.sdone{display:grid;gap:10px;justify-items:start}.sdone .big{font:800 48px/1 var(--display)}
+.say{display:grid;gap:14px;max-width:680px}
+.sayword{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.sayform{display:flex;gap:8px;flex-wrap:wrap}
+.sayform input{flex:1 1 220px;min-width:0;font:400 18px var(--body,inherit);padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.howto ul{margin:8px 0 0;padding-left:20px;display:grid;gap:6px}
+.snote{color:var(--estar);font-size:14px}
+
+.topnav{display:flex;flex-direction:column;gap:10px}
+.topnav .brand{font:800 18px var(--display);color:var(--ink)}
+</style>
+<div class="wrap">
+  <nav class="topnav" aria-label="Sections"><span class="brand">Spanish stress &amp; accents</span>
+    <div class="seg" id="nav" role="group"><button type="button" data-v="lesson" aria-pressed="true">Lesson</button><button type="button" data-v="practice" aria-pressed="false">Questions</button><button type="button" data-v="lab" aria-pressed="false">Stress lab</button></div></nav>
+  <main id="main"></main>
+</div>
+<script>
+var TOPICS=[];
+function G(q,o,a,h,ex){return {k:"gap",q:q,o:o,a:a,h:h,ex:ex}}
+function M(q,o,a,ex){return {k:"mean",q:q,o:o,a:a,ex:ex}}
+function F(s,bad,w,a,ex){return {k:"fix",s:s,bad:bad,w:w,a:a,ex:ex}}
+TOPICS.push({
+id:"accents",n:1,level:"A1",title:"Stress and written accents",
+sum:"Where the stress falls, when to write the accent mark, and accents that change meaning.",
+intro:"Spanish spelling tells you exactly how to pronounce a word. Three rules decide which syllable is stressed, and the written accent (<i>tilde</i>) appears only when a word breaks those rules. A handful of short words also use the accent to tell apart two different meanings.",
+html:`
+<p class="callout"><b>Practise this in the <a href="#lab">Stress lab</a>:</b> hear pairs like <i>papa / papá</i>, tap the stressed syllable, and say words back to check your stress.</p>
+<section><h2>The default stress rules</h2>
+<p>Look at the last letter of the word. That alone tells you where the stress falls when there is no written accent.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Word ends in</th><th>Stress falls on</th><th>Examples</th></tr></thead><tbody>
+<tr><td>a vowel, -n or -s</td><td>second-to-last syllable</td><td>CA-sa, HA-blan, LI-bros, za-PA-tos</td></tr>
+<tr><td>any other consonant</td><td>last syllable</td><td>ha-BLAR, ciu-DAD, es-pa-ÑOL, re-LOJ</td></tr>
+</tbody></table></div>
+<p class="callout">The accent mark is a signal that says "the rule doesn't apply here, stress this syllable instead." If a word follows the rule, it never needs one.</p>
+</section>
+<section><h2>When to write the accent</h2>
+<div class="split">
+<div class="col a"><h3>Stress on the last syllable</h3><span class="mnemo">agudas</span><ul class="uses">
+<li><b>Accent if it ends in a vowel, -n or -s</b><span class="eg">café, canción, inglés, sofá, Perú</span><span class="why">These endings would normally pull the stress one syllable earlier, so the mark is needed.</span></li>
+<li><b>No accent otherwise</b><span class="eg">hablar, ciudad, reloj, papel</span><span class="why">Ending in another consonant already puts the stress last.</span></li></ul></div>
+<div class="col b"><h3>Stress on the second-to-last</h3><span class="mnemo">llanas</span><ul class="uses">
+<li><b>Accent if it ends in a consonant other than -n or -s</b><span class="eg">árbol, fácil, lápiz, útil, azúcar</span><span class="why">The mirror image of the rule on the left.</span></li>
+<li><b>No accent otherwise</b><span class="eg">casa, joven, examen, libros</span><span class="why">This is the most common pattern in Spanish.</span></li></ul></div>
+</div>
+<ul class="traps"><li><strong>Stress on the third-to-last syllable: always an accent.</strong><span>música, teléfono, sábado, miércoles, rápido. No rule ever puts the stress this far back, so these words are always marked.</span></li></ul>
+</section>
+<section><h2>Accents that change meaning</h2>
+<p>Some short words (almost all one syllable) carry an accent only to separate two words that are spelled the same.</p>
+<div class="tbl-wrap"><table><thead><tr><th>With accent</th><th>Without accent</th></tr></thead><tbody>
+<tr><td>tú <em>you</em></td><td>tu <em>your</em>: tu casa</td></tr>
+<tr><td>él <em>he</em></td><td>el <em>the</em>: el libro</td></tr>
+<tr><td>mí <em>me (after a preposition)</em>: para mí</td><td>mi <em>my</em>: mi casa</td></tr>
+<tr><td>sí <em>yes</em></td><td>si <em>if</em>: si quieres</td></tr>
+<tr><td>sé <em>I know</em></td><td>se <em>reflexive pronoun</em>: se llama</td></tr>
+<tr><td>té <em>tea</em></td><td>te <em>you (object)</em>: te quiero</td></tr>
+<tr><td>dé <em>give (from dar)</em></td><td>de <em>of, from</em></td></tr>
+<tr><td>más <em>more</em></td><td>mas <em>but (literary, rare)</em></td></tr>
+<tr><td>aún <em>still, yet</em></td><td>aun <em>even</em></td></tr>
+</tbody></table></div>
+<p>Question and exclamation words also take an accent: <i>qué, quién, cuál, dónde, cuándo, cuánto, cómo</i>. Without the accent they are connectors: <i>Creo que viene</i> (I think <b>that</b> he's coming).</p>
+</section>
+<section><h2>Plurals can move the accent</h2>
+<p>Adding <i>-es</i> adds a syllable, so the rule can change. The stress stays on the same vowel, and the written accent appears or disappears to keep it there.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Singular</th><th>Plural</th><th>What happened</th></tr></thead><tbody>
+<tr><td>canción</td><td>canciones</td><td>Now second-to-last and ends in -s: the rule covers it, so the accent goes.</td></tr>
+<tr><td>joven</td><td>jóvenes</td><td>Stress is now third-to-last: the accent is needed.</td></tr>
+<tr><td>examen</td><td>exámenes</td><td>Same as joven.</td></tr>
+<tr><td>inglés</td><td>ingleses</td><td>Same as canción.</td></tr>
+</tbody></table></div>
+</section>
+<section><h2>Common traps</h2><ul class="traps">
+<li><strong>Capitals keep their accents.</strong><span>Ángel, Él es médico, ÁFRICA. The old idea that capitals drop accents is a typewriter habit, not a rule.</span></li>
+<li><strong>A stressed í or ú next to a, e or o.</strong><span>día, país, frío, Raúl. The mark splits the two vowels into separate syllables (dí-a), even when the stress rule alone wouldn't require it. An unstressed i or u next to another vowel forms one syllable and takes no mark: ciudad, cuidado, bien.</span></li>
+<li><strong>One-syllable words never take an accent for stress.</strong><span>fue, fui, dio, vio, ti, mes, pie. Only the pairs in the table above (tú/tu, sí/si...) carry one. A very common mistake: <i>para tí</i> instead of <i>para ti</i>.</span></li>
+<li><strong>solo and este no longer need accents.</strong><span>Older texts write <i>sólo</i> and <i>éste</i>. Since 2010 the Real Academia recommends writing them without an accent, allowing it only to avoid ambiguity. In 2023 it left that decision to the writer.</span></li>
+<li><strong>Typing tip.</strong><span>On a Mac, hold the vowel key and pick the accented letter. On Windows, switch to the US-International keyboard and type ' then the vowel. On a phone, press and hold a vowel to pick the accented letter.</span></li>
+</ul></section>`,
+qs:[
+G("Me gusta mucho la ___. (music)",["música","musica"],"música","the word for “music”","Stress on the third-to-last syllable always takes an accent: MÚ-si-ca."),
+G("___ hermano vive en Lima. (my)",["Mi","Mí"],"mi","the word for “my”","The possessive mi has no accent. Mí with an accent is the pronoun after a preposition: para mí."),
+G("Este regalo es para ___. (me)",["mí","mi"],"mí","the word for “me”","After a preposition, the pronoun is mí, with an accent."),
+G("¿___ te llamas? (how)",["Cómo","Como"],"cómo","the question word for “how”","Question words carry an accent: ¿Cómo?"),
+G("___ eres mi mejor amigo. (you)",["Tú","Tu"],"tú","the word for “you”","The subject pronoun tú has an accent. Tu without one means “your”."),
+G("¿Dónde está ___ libro? (your)",["tu","tú"],"tu","the word for “your”","The possessive tu has no accent."),
+G("Vivo en una ___ muy grande. (city)",["ciudad","ciudád"],"ciudad","the word for “city”","It ends in -d, so the stress falls on the last syllable by default. No accent needed."),
+G("Tomo un ___ con leche. (coffee)",["café","cafe"],"café","the word for “coffee”","Stress on the last syllable, ending in a vowel: it needs an accent."),
+G("Hay dos ___ esta semana. (exams)",["exámenes","examenes"],"exámenes","plural of “examen”","The plural adds a syllable, which puts the stress third-to-last: e-XÁ-me-nes."),
+G("Tengo tres ___ favoritas. (songs)",["canciones","canciónes"],"canciones","plural of “canción”","In the plural the stress is second-to-last and the word ends in -s, so the accent disappears."),
+G("—¿Quieres venir? —___, claro. (yes)",["Sí","Si"],"sí","the word for “yes”","Sí meaning “yes” takes an accent. Si without one means “if”."),
+G("___ tengo tiempo, te llamo. (if)",["Si","Sí"],"si","the word for “if”","Si meaning “if” has no accent."),
+G("No ___ dónde está. (I know)",["sé","se"],"sé","“I know”","Sé (from saber) takes an accent to separate it from the pronoun se."),
+G("___ es médico y su hermana es profesora. (he)",["Él","El"],"él","the word for “he”","The pronoun él has an accent; the article el does not."),
+G("Necesito un ___ para escribir. (pencil)",["lápiz","lapiz"],"lápiz","the word for “pencil”","Stress second-to-last, ending in -z (not n or s): it needs an accent."),
+G("Hoy es ___. (Saturday)",["sábado","sabado"],"sábado","the word for “Saturday”","Stress on the third-to-last syllable: always an accent."),
+G("Mi abuela vive en un pueblo de ___. (Peru)",["Perú","Peru"],"Perú","the country Peru","Stress on the last syllable, ending in a vowel: Pe-RÚ needs an accent."),
+M("Where is the stress in «hablan»?",["HA-blan","ha-BLAN"],0,"It ends in -n, so the stress falls on the second-to-last syllable."),
+M("Where is the stress in «hablar»?",["HA-blar","ha-BLAR"],1,"It ends in -r, so the stress falls on the last syllable."),
+M("Why does «árbol» have an accent?",["Its stress is second-to-last, but it ends in a consonant other than n or s.","Every word that starts with a vowel needs an accent."],0,"Without the accent, a word ending in -l would be stressed on the last syllable."),
+F(["Mi hermana es médica.","¿Donde vives?","Me gusta el té.","Él es mi padre."],1,"Donde","dónde","Question words take an accent: ¿Dónde vives?"),
+F(["Estudio inglés.","Vivo en Perú.","Mi telefono es nuevo.","Es un árbol muy alto."],2,"telefono","teléfono","Stress on the third-to-last syllable always needs an accent: te-LÉ-fo-no."),
+F(["Fui al cine.","Este café es para tí.","Él es alto.","¿Qué quieres?"],1,"tí","ti","One-syllable words take an accent only to tell two words apart. Ti has no twin, so no accent."),
+F(["La canción es bonita.","Tengo dos canciónes.","El examen es hoy.","Son jóvenes."],1,"canciónes","canciones","In the plural, the accent disappears: can-CIO-nes follows the default rule."),
+F(["¿Qué quieres?","Para mi, un café.","Sí, gracias.","Tú eres alto."],1,"mi","mí","After a preposition the pronoun is mí, with an accent.")
+]});
+
+</script>
+<script>
+
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const RG="mx";const ROUTES=[];const main=document.getElementById("main");
+function drawRail(cur){document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===cur))}
+const T=TOPICS[0];
+function showLesson(){
+  main.innerHTML=`<header class="hero"><div class="chips"><span class="chip">A1 · Pronunciation and spelling</span></div><h1>${esc(T.title)}</h1><p>${T.intro}</p></header>${T.html}
+  <section><h2>Check yourself</h2><p>${T.qs.length} quick questions on this lesson. Then try the <a href="#lab">Stress lab</a> to hear and say the words.</p><div class="row"><a class="go linkbtn" href="#practice">Start the questions</a></div></section>`;
+  drawRail("lesson");
+}
+function showPractice(){
+  const Q=T.qs.slice().sort(()=>Math.random()-.5);let i=0,score=0;
+  const box=document.createElement("section");
+  main.innerHTML=`<header class="hero"><h1>Check yourself</h1><p>Questions on stress and written accents.</p></header>`;main.appendChild(box);
+  function draw(sel){
+    if(i>=Q.length){box.innerHTML=`<div class="drill"><b style="font:800 44px/1 var(--display)">${score}/${Q.length}</b><p>${score>=Q.length*.85?"Great work.":"Review the lesson and try again: it sticks with repetition."}</p><div class="row"><button class="go" id="again">Try again</button><a class="ghost linkbtn" href="#lesson" style="padding:10px 18px;border:1px solid var(--line);border-radius:10px">Back to the lesson</a></div></div>`;box.querySelector("#again").onclick=showPractice;return}
+    const q=Q[i];let prompt,opts,ok;
+    if(q.k==="gap"){prompt=esc(q.q).replace("___",'<span class="blank" style="border-bottom:2px solid var(--ser);padding:0 18px"></span>')+(q.h?`<br><small style="color:var(--muted)">Choose ${esc(q.h)}</small>`:"");opts=q.o;ok=q.o.findIndex(o=>o.toLowerCase()===String(q.a).toLowerCase())}
+    else if(q.k==="mean"){prompt=esc(q.q);opts=q.o;ok=q.a}
+    else{prompt="Which sentence has a mistake?";opts=q.s;ok=q.bad}
+    box.innerHTML=`<div class="drill"><span class="label">${i+1} of ${Q.length} · ${score} right</span><p style="font-size:19px;margin:0">${prompt}</p>
+      <div class="opts">${opts.map((o,j)=>`<button type="button" class="opt${sel!=null&&j===ok?" right":""}${sel!=null&&j===sel&&sel!==ok?" wrong":""}" data-j="${j}" ${sel!=null?"disabled":""}>${esc(o)}</button>`).join("")}</div>
+      ${sel!=null?`<div class="fb ${sel===ok?"ok":"no"}"><b>${sel===ok?"Right.":"Not quite."}</b>${q.k==="fix"?`<span>${esc(q.w)} → <b>${esc(q.a)}</b></span>`:""}<span>${esc(q.ex||"")}</span></div><div class="row"><button class="go" id="next">Next</button></div>`:""}</div>`;
+    if(sel==null)box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const j=+b.dataset.j;if(j===ok)score++;draw(j)});
+    else{const n=box.querySelector("#next");n.onclick=()=>{i++;draw()};n.focus()}
+  }
+  draw();drawRail("practice");
+}
+
+/* ================= STRESS LAB: hear it, tap it, say it ================= */
+// Words are written with syllables split by "-"; the stressed syllable is worked out from the spelling rules,
+// exactly as a Spanish reader would: an accent mark wins; otherwise vowel/n/s → second-to-last, else last.
+const SPAIRS=[ // groups that differ only in stress, each [word, meaning, example]
+ [["pa-pa","potato","Quiero una papa al horno."],["pa-pá","dad","Mi papá trabaja mucho."]],
+ [["es-ta","this (one)","Esta casa es bonita."],["es-tá","he/she is","Mi mamá está en casa."]],
+ [["ha-blo","I speak","Hablo un poco de español."],["ha-bló","he spoke","Ayer habló con el jefe."]],
+ [["can-to","I sing","Canto en la regadera."],["can-tó","she sang","Cantó en la boda."]],
+ [["ma-má","mom","Mi mamá cocina rico."],["ma-ma","she breastfeeds","El bebé mama cada tres horas."]],
+ [["tér-mi-no","end, term","Al término del partido."],["ter-mi-no","I finish","Termino a las cinco."],["ter-mi-nó","he finished","Terminó la tarea."]],
+ [["pú-bli-co","public, audience","El público aplaudió."],["pu-bli-co","I publish","Publico fotos en Instagram."],["pu-bli-có","she published","Publicó un libro."]],
+ [["prác-ti-co","practical","Es muy práctico."],["prac-ti-co","I practise","Practico todos los días."],["prac-ti-có","he practised","Practicó toda la tarde."]],
+ [["á-ni-mo","spirit, mood","¡Ánimo, tú puedes!"],["a-ni-mo","I cheer on","Animo a mi equipo."],["a-ni-mó","she cheered on","Nos animó mucho."]],
+ [["cál-cu-lo","calculation","Hice un cálculo rápido."],["cal-cu-lo","I calculate","Calculo el total."],["cal-cu-ló","he calculated","Calculó mal."]],
+ [["sá-ba-na","bedsheet","Cambia la sábana."],["sa-ba-na","savanna","Leones en la sabana."]],
+ [["se-cre-ta-ria","secretary","La secretaria contesta el teléfono."],["se-cre-ta-rí-a","ministry, office","La Secretaría de Salud."]],
+ [["con-ti-nuo","continuous","Un ruido continuo."],["con-ti-nú-o","I continue","Continúo mañana."],["con-ti-nuó","he continued","Continuó caminando."]],
+ [["bai-le","dance","Un baile típico."],["bai-lé","I danced","Bailé toda la noche."]],
+ [["in-gles","groins","Me duelen las ingles."],["in-glés","English","Hablo inglés."]],
+ [["lí-mi-te","limit","El límite de velocidad."],["li-mi-te","limit (command, formal)","Limite el uso del agua."],["li-mi-té","I limited","Limité el gasto."]],
+];
+const SWORDS=["ca-sa","ha-blan","li-bros","za-pa-tos","jo-ven","e-xa-men","me-sa","to-man","ha-blar","ciu-dad","es-pa-ñol","re-loj","pa-pel","fe-liz","ver-dad","co-mer","ca-fé","can-ción","sa-lón","in-glés","so-fá","a-vión","ár-bol","fá-cil","lá-piz","a-zú-car","dó-lar","cés-ped","mú-si-ca","te-lé-fo-no","sá-ba-do","miér-co-les","rá-pi-do","pá-ja-ro","plá-ta-no","mé-di-co","dí-a","pa-ís","frí-o","tí-o","Ra-úl","rí-o","ta-co","to-ma-te","a-gua-ca-te","chi-le","tor-ti-lla","ta-ma-les","pe-rro","ga-to","a-mor","mu-jer","hos-pi-tal","Mé-xi-co","jó-ve-nes","e-xá-me-nes","can-cio-nes","lu-nes","mar-tes","jue-ves","pre-gun-tar","fa-mi-lia","se-ma-na","tra-ba-jo","doc-tor","ál-bum","ca-rác-ter","es-tu-dian-te","ce-lu-lar","pro-fe-sor","Ni-co-lás","Ja-lis-co","O-a-xa-ca","Mi-cho-a-cán","Que-ré-ta-ro","Yu-ca-tán"];
+const S_ACC=/[áéíóú]/;
+const sylls=w=>w.split("-");
+const plainW=w=>w.replace(/-/g,"");
+function stressIdx(w){const s=sylls(w);const a=s.findIndex(x=>S_ACC.test(x));if(a>=0)return a;if(s.length===1)return 0;return /[aeiouns]$/i.test(plainW(w))?s.length-2:s.length-1}
+function stressWhy(w){const s=sylls(w),i=stressIdx(w),n=s.length,pos=i===n-1?"last":i===n-2?"second-to-last":"third-to-last";
+  if(S_ACC.test(w))return `The written accent on <b>${esc(s[i])}</b> marks the stress (${pos} syllable).${n-1-i>=2?" Stress this far back always needs an accent.":""}`;
+  return /[aeiouns]$/i.test(plainW(w))?`No accent mark and it ends in <b>${esc(plainW(w).slice(-1))}</b> (a vowel, -n or -s), so the stress goes on the second-to-last syllable.`:`No accent mark and it ends in <b>${esc(plainW(w).slice(-1))}</b> (a consonant other than -n or -s), so the stress goes on the last syllable.`}
+const unacc=s=>s.normalize("NFD").replace(/[́]/g,"").normalize("NFC");
+function syllHTML(w,mark){const s=sylls(w),i=stressIdx(w);return s.map((x,k)=>`<span class="sy${mark&&k===i?" on":""}">${esc(x)}</span>`).join('<span class="sdot">·</span>')}
+
+/* speech: the device's own Spanish voice */
+let SVO=[];
+function sLoad(){try{SVO=speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang))}catch(e){SVO=[]}}
+if("speechSynthesis" in window){sLoad();speechSynthesis.onvoiceschanged=sLoad}
+let _SU=null;
+function sSay(t,slow){
+  if(!("speechSynthesis" in window)){sNote();return}
+  try{if(!SVO.length)sLoad();const want={mx:"es-MX",es:"es-ES",ar:"es-AR"}[RG]||"es-MX";
+    const v=SVO.find(v=>v.lang.replace("_","-").toLowerCase()===want.toLowerCase())||SVO.find(v=>/es-(us|419|mx)/i.test(v.lang))||SVO[0];
+    const u=new SpeechSynthesisUtterance(t);if(v)u.voice=v;u.lang=v?v.lang:want;u.rate=slow?0.55:0.85;_SU=u;let ok=false;u.onstart=u.onend=()=>{ok=true};
+    const go=()=>{try{speechSynthesis.resume()}catch(e){}speechSynthesis.speak(u);setTimeout(()=>{if(!ok&&_SU===u&&!speechSynthesis.speaking)sNote()},2500)};
+    if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();setTimeout(go,80)}else go()}catch(e){sNote()}}
+function sNote(){const n=document.getElementById("sNote");if(n)n.hidden=false}
+const sBtns=(t,lbl)=>`<span class="sbtns"><button type="button" class="sbtn" data-say="${esc(t)}" aria-label="Play ${esc(t)}">▶${lbl?" "+esc(lbl):""}</button><button type="button" class="sbtn" data-say="${esc(t)}" data-slow="1" aria-label="Play ${esc(t)} slowly">🐢</button></span>`;
+
+/* ---------- page ---------- */
+let STAB="hear";
+function showStress(tab){
+  if(tab)STAB=tab;
+  const tabs=[["hear","Hear the difference"],["tap","Tap the stress"],["say","Say it back"]];
+  main.innerHTML=`<header class="hero"><div class="chips"><span class="chip">A1 · Pronunciation</span><span class="chip">${SPAIRS.length} word pairs</span></div>
+    <h1>Stress lab</h1><p>Where the stress falls changes how Spanish sounds, and sometimes what a word means: <i>papa</i> is a potato, <i>papá</i> is your dad. Listen, practise, then try it yourself. The rules are in <a href="#lesson">the lesson</a>.</p>
+    <p class="snote" id="sNote" hidden>No sound? On iPhone, flip the silent switch off and turn the volume up. Inside the Claude app, try opening the page in Safari or Chrome.</p>
+    <div class="seg" role="tablist" id="stabs">${tabs.map(([k,l])=>`<button type="button" role="tab" data-v="${k}" aria-pressed="${k===STAB}" aria-selected="${k===STAB}">${l}</button>`).join("")}</div></header>
+    <section id="sbody"></section>`;
+  main.querySelectorAll("#stabs button").forEach(b=>b.onclick=()=>{STAB=b.dataset.v;showStress()});
+  ({hear:sHear,tap:sTap,say:sSayBack})[STAB](main.querySelector("#sbody"));
+  drawRail("lab");
+}
+
+function sHear(box){
+  box.innerHTML=`<p>Each group is spelled the same except for the accent, and only the stress moves. Play them one after another, and use 🐢 to hear them slowly. The <span class="sy on" style="padding:0 4px">highlighted</span> syllable is the stressed one.</p>
+  <div class="pairs">${SPAIRS.map(g=>`<div class="pair">${g.map(([w,m,x])=>`<div class="pw"><div class="pwtop"><span class="sword">${syllHTML(w,true)}</span>${sBtns(plainW(w))}</div><span class="pm">${esc(m)}</span><span class="px">${esc(x)} ${sBtns(x,"")}</span></div>`).join("")}</div>`).join("")}</div>`;
+}
+
+function sTap(box){
+  let mode=store.get("sg-smode")||"read",len=+(store.get("sg-slen")||10),Q=[],i=0,score=0,done=false;
+  const pairWords=SPAIRS.flat().map(x=>x[0]);
+  function setup(){
+    box.innerHTML=`<div class="setup"><div class="field"><span class="label">Mode</span><div class="seg" id="smode">${[["read","Read it"],["listen","Listen for it"]].map(([v,l])=>`<button type="button" data-v="${v}" aria-pressed="${v===mode}">${l}</button>`).join("")}</div>
+      <span class="desc">${mode==="read"?"See the word with its spelling and tap the stressed syllable. Practises the rules.":"Hear the word, with the accent marks hidden, and tap the syllable you heard stressed. Trains your ear, using the word pairs."}</span></div>
+      <div class="field"><span class="label">Length</span><div class="seg" id="slen">${[10,20,40].map(v=>`<button type="button" data-v="${v}" aria-pressed="${v===len}">${v}</button>`).join("")}</div></div>
+      <div class="row"><button class="go" id="sgo">Start</button></div></div>`;
+    box.querySelectorAll("#smode button").forEach(b=>b.onclick=()=>{mode=b.dataset.v;store.set("sg-smode",mode);setup()});
+    box.querySelectorAll("#slen button").forEach(b=>b.onclick=()=>{len=+b.dataset.v;store.set("sg-slen",len);setup()});
+    box.querySelector("#sgo").onclick=start;
+  }
+  function start(){
+    const pool=mode==="listen"?pairWords:[...SWORDS,...pairWords];
+    Q=[];while(Q.length<len){const sh=pool.slice().sort(()=>Math.random()-.5);Q.push(...sh)}Q=Q.slice(0,len);i=0;score=0;draw();
+  }
+  function draw(ans){
+    if(i>=Q.length){box.innerHTML=`<div class="sdone"><b class="big">${score}/${Q.length}</b><p>${score===Q.length?"Perfect.":score>=Q.length*.8?"Nearly there.":"Keep going: the rules click with practice."}</p><div class="row"><button class="go" id="sagain">Again</button><button class="ghost" id="ssetup">Change settings</button></div></div>`;
+      box.querySelector("#sagain").onclick=start;box.querySelector("#ssetup").onclick=setup;return}
+    const w=Q[i],s=sylls(w),k=stressIdx(w),show=mode==="listen"&&ans==null?s.map(unacc):s,pair=SPAIRS.find(g=>g.some(x=>x[0]===w));
+    const meaning=pair?pair.find(x=>x[0]===w)[1]:"";
+    box.innerHTML=`<div class="sq"><div class="sqtop"><span class="label">${i+1} of ${Q.length} · ${score} right</span>${sBtns(plainW(w))}</div>
+      <p class="sprompt">${mode==="listen"?(ans==null?"Which syllable did you hear stressed?":"You heard: <b>"+esc(plainW(w))+"</b>"+(meaning?" ("+esc(meaning)+")":"")):"Which syllable is stressed?"}</p>
+      <div class="sylrow">${show.map((x,j)=>`<button type="button" class="sylb${ans!=null&&j===k?" right":""}${ans!=null&&j===ans&&ans!==k?" wrong":""}" data-j="${j}" ${ans!=null?"disabled":""}>${esc(x)}</button>`).join("")}</div>
+      ${ans!=null?`<div class="sfb ${ans===k?"ok":"no"}"><b>${ans===k?"Right.":"Not quite."}</b> <span class="sword">${syllHTML(w,true)}</span><p>${stressWhy(w)}</p>${pair?`<p class="pairhint">Compare: ${pair.map(x=>`<span class="pchip">${esc(plainW(x[0]))} <em>${esc(x[1])}</em> ${sBtns(plainW(x[0]))}</span>`).join(" ")}</p>`:""}</div>
+      <div class="row"><button class="go" id="snext">Next</button></div>`:""}</div>`;
+    if(ans==null){if(mode==="listen")setTimeout(()=>sSay(plainW(w)),200);box.querySelectorAll(".sylb").forEach(b=>b.onclick=()=>{const j=+b.dataset.j;if(j===k)score++;draw(j);if(mode==="read")sSay(plainW(w))})}
+    else{const n=box.querySelector("#snext");n.onclick=()=>{i++;draw()};n.focus()}
+  }
+  setup();
+}
+
+function sSayBack(box){
+  const items=SPAIRS.flat();let cur=items[Math.floor(Math.random()*items.length)];
+  function draw(res){
+    const w=cur[0],pair=SPAIRS.find(g=>g.includes(cur));
+    box.innerHTML=`<div class="say">
+    <p>This page can't use your microphone directly, but your phone's keyboard can. Its dictation types what it hears, and in Spanish it adds the accent only if you put the stress in the right place. So <i>papá</i> comes out as "papá" and <i>papa</i> as "papa".</p>
+    <details class="howto"><summary>One-time setup</summary><ul>
+      <li><b>iPhone:</b> Settings → General → Keyboard → Keyboards → Add New Keyboard → Español (México). Make sure Enable Dictation is on.</li>
+      <li><b>Android (Gboard):</b> Gboard settings → Languages → add Español (México).</li>
+      <li>Then, when typing in the box below, switch to the Spanish keyboard (🌐 globe key) and tap the 🎤 microphone.</li></ul></details>
+    <div class="sq"><span class="label">Say this word</span>
+      <div class="sayword"><span class="sword">${syllHTML(w,true)}</span>${sBtns(plainW(w))}</div>
+      <span class="pm">${esc(cur[1])} · <i>${esc(cur[2])}</i></span>
+      <form class="sayform" id="sayf" autocomplete="off"><input id="sayin" lang="es" autocapitalize="off" spellcheck="false" placeholder="Tap here, then 🎤 and say it" aria-label="What your phone heard"><button class="go" type="submit">Check</button></form>
+      ${res||""}
+      <div class="row"><button class="ghost" id="saynew" type="button">Another word</button>${pair.length>1?`<button class="ghost" id="saypair" type="button">Try its pair</button>`:""}</div></div>
+    <p class="desc">How reliable is this? It's a good check for the word pairs, because the spelling changes with the stress. Dictation guesses from context too, so saying a short sentence that fits the word (like the example) helps it pick the right one. You can also just type the word yourself to practise the accent marks.</p></div>`;
+    const inp=box.querySelector("#sayin");
+    box.querySelector("#sayf").onsubmit=ev=>{ev.preventDefault();check(inp.value)};
+    box.querySelector("#saynew").onclick=()=>{let n;do{n=items[Math.floor(Math.random()*items.length)]}while(n===cur&&items.length>1);cur=n;draw()};
+    const sp=box.querySelector("#saypair");if(sp)sp.onclick=()=>{const g=pair;cur=g[(g.indexOf(cur)+1)%g.length];draw()};
+  }
+  function check(raw){
+    const heard=String(raw||"").toLowerCase().normalize("NFC").replace(/[¿?¡!.,;:"«»]/g," ").split(/\s+/).filter(Boolean);
+    const w=plainW(cur[0]).toLowerCase(),group=SPAIRS.find(g=>g.includes(cur)).map(x=>plainW(x[0]).toLowerCase());
+    let res;
+    if(!heard.length)res=`<div class="sfb no">Nothing came through. Tap the box, switch to the Spanish keyboard and tap 🎤.</div>`;
+    else if(heard.includes(w))res=`<div class="sfb ok"><b>Your phone heard "${esc(w)}".</b> That's the right stress: ${syllHTML(cur[0],true)}.</div>`;
+    else{const other=heard.find(h=>group.includes(h));
+      if(other){const ow=SPAIRS.flat().find(x=>plainW(x[0]).toLowerCase()===other);
+        res=`<div class="sfb no"><b>Your phone heard "${esc(other)}"</b> (${esc(ow[1])}). The stress landed on <b>${esc(sylls(ow[0])[stressIdx(ow[0])])}</b> instead of <b>${esc(sylls(cur[0])[stressIdx(cur[0])])}</b>. Listen again ${sBtns(w)} and lean on ${syllHTML(cur[0],true)}.</div>`}
+      else if(heard.some(h=>unacc(h)===unacc(w)))res=`<div class="sfb no"><b>Close: "${esc(heard.find(h=>unacc(h)===unacc(w)))}".</b> Same letters, different accent. Check where you put the stress: ${syllHTML(cur[0],true)}.</div>`;
+      else res=`<div class="sfb no"><b>Your phone heard "${esc(heard.join(" "))}".</b> That's a different word. Make sure the keyboard is set to Spanish, then try again a little more slowly.</div>`}
+    draw(res);
+    box.querySelector("#sayin").value=raw;
+  }
+  draw();
+}
+ROUTES.push({test:h=>h==="stress",show:()=>showStress()});
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-say]");if(b&&b.closest("#main,main,.wrap")){ev.preventDefault();sSay(b.dataset.say,!!b.dataset.slow)}});
+
+
+function route(){const h=location.hash.slice(1)||"lesson";
+  if(h==="lab"||h==="stress")showStress();else if(h==="practice")showPractice();else showLesson();
+  if(h==="lab"||h==="stress")drawRail("lab");window.scrollTo(0,0)}
+addEventListener("hashchange",route);
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>{location.hash=b.dataset.v});
+route();
+
+</script>
+
+</body></html>
